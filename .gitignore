@@ -3,10 +3,10 @@
 **/*.rs.bk
 # Cargo.lock has been removed from gitignore to ensure reproducible builds
 
-# ── Dependencias compiladas / vendor ──────────────────────────────────────────
+# ── Compiled dependencies / vendor ────────────────────────────────────────────
 /vendor/
 
-# ── Artefactos de build ───────────────────────────────────────────────────────
+# ── Build artifacts ───────────────────────────────────────────────────────────
 /artifacts/
 *.deb
 *.rpm
@@ -14,16 +14,16 @@
 *.tar.xz
 *.zip
 
-# ── Archivos temporales de la app ─────────────────────────────────────────────
+# ── App temporary files ───────────────────────────────────────────────────────
 /tmp/rustplayer_thumbs/
 
-# ── Configuración local (contiene API keys) ───────────────────────────────────
-# NO commitear: puede contener keys reales si el dev las puso en código
-# Mejor usar variables de entorno en producción
-# src/lastfm.rs        ← no ignorar, pero no commitear con keys reales
-# src/opensubtitles.rs ← ídem
+# ── Local configuration (contains API keys) ───────────────────────────────────
+# DO NOT commit: may contain real keys if the dev put them in code
+# Better to use environment variables in production
+# src/lastfm.rs        ← do not ignore, but do not commit with real keys
+# src/opensubtitles.rs ← ditto
 
-# ── IDEs y editores ───────────────────────────────────────────────────────────
+# ── IDEs and editors ──────────────────────────────────────────────────────────
 .idea/
 *.iml
 *.ipr
@@ -37,16 +37,16 @@
 Thumbs.db
 desktop.ini
 
-# ── VS Code (NO ignorar .vscode — lo commiteamos para compartir config) ───────
-# .vscode/       ← INCLUIDO intencionalmente
+# ── VS Code (DO NOT ignore .vscode — committed to share config) ──────────────
+# .vscode/       ← INCLUDED intentionally
 .vscode/settings.json.local
 
-# ── Logs ─────────────────────────────────────────────────────────────────────
+# ── Logs ──────────────────────────────────────────────────────────────────────
 *.log
 build.log
 debug.log
 
-# ── Cobertura de tests ────────────────────────────────────────────────────────
+# ── Test coverage ─────────────────────────────────────────────────────────────
 /coverage/
 lcov.info
 *.profraw
