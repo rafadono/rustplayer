@@ -1,8 +1,8 @@
-# Web de RPlayer
+# RPlayer website
 
-Landing estática lista para publicar.
+Static landing ready to publish.
 
-## Archivos
+## Files
 
 - `index.html`
 - `styles.css`
@@ -12,26 +12,26 @@ Landing estática lista para publicar.
 - `terms.html`
 - `assets/icon-rp.png`
 
-## Personalizar antes de publicar
+## Customize before publishing
 
-Reemplaza estos placeholders en `index.html`:
+Replace these placeholders in `index.html`:
 
 - `https://github.com/TU_ORG/rplayer`
 - `https://github.com/TU_ORG/rplayer/releases/latest`
 - `https://patreon.com/TU_USUARIO`
 - `contacto@rplayer.app`
 
-## Publicidad (AdSense u otra red)
+## Advertising (AdSense or other network)
 
-El sitio ya incluye zonas de anuncios en todas las páginas (`index`, `privacy`, `terms`).
+The site already includes ad areas on all pages (`index`, `privacy`, `terms`).
 
-Para activarlas:
+To activate them:
 
-1. Abre `ads.js`.
-2. Reemplaza `ADSENSE_CLIENT` por tu ID real (`ca-pub-...`).
-3. Reemplaza los `data-ad-slot` de cada bloque por slots reales.
+1. Open `ads.js`.
+2. Replace `ADSENSE_CLIENT` with your real ID (`ca-pub-...`).
+3. Replaces the `data-ad-slot` of each block with real slots.
 
-Ejemplo AdSense (reemplaza `ca-pub-XXXXXXXXXX`):
+AdSense example (replaces `ca-pub-XXXXXXXXXX`):
 
 ```html
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
@@ -39,24 +39,24 @@ Ejemplo AdSense (reemplaza `ca-pub-XXXXXXXXXX`):
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 ```
 
-## Despliegue rápido
+## Rapid deployment
 
 ### GitHub Pages
 
-1. Crear repo (o rama) para sitio web.
-2. Subir contenido de carpeta `website/`.
-3. Activar GitHub Pages (branch `main`, folder `/root` o `/docs`).
+1. Create repo (or branch) for website.
+2. Upload contents of folder `website/`.
+3. Activate GitHub Pages (branch `main`, folder `/root` or `/docs`).
 
 ### Netlify / Vercel
 
-1. Importar repo.
-2. Configurar directorio raíz: `website`.
+1. Import repo.
+2. Set root directory: `website`.
 3. Deploy.
 
-## Recomendación legal
+## Legal recommendation
 
-Si usas anuncios, agrega:
+If you use ads, add:
 
-- Política de privacidad
-- Aviso de cookies
-- Aviso de terceros/publicidad personalizada
+- Privacy Policy
+- Cookie notice
+- Third Party Notice/Personalized Advertising

@@ -1,76 +1,76 @@
-# Configuración de API Keys
+# API Key Configuration
 
-Todas las integraciones externas son **opcionales**. RPlayer funciona perfectamente sin ninguna API key.
+All external integrations are **optional**. RPlayer works perfectly without any API key.
 
 ---
 
 ## Last.fm — Scrobbling
 
-Registra las canciones que escuchas en tu perfil de Last.fm.
+Record the songs you listen to on your Last.fm profile.
 
-### Pasos
+### Steps
 
-1. Crear cuenta en https://www.last.fm (si no tienes una)
-2. Crear una API application en https://www.last.fm/api/account/create
-   - Application name: `RPlayer` (o el nombre que quieras)
-   - Application description: cualquier texto
-3. Copiar la **API key** y el **Shared secret**
-4. Editar `src/lastfm.rs`:
+1. Create an account at https://www.last.fm (if you don't have one)
+2. Create an API application at https://www.last.fm/api/account/create
+   - Application name: `RPlayer` (or whatever name you want)
+   - Application description: any text
+3. Copy the **API key** and the **Shared secret**
+4. Edit `src/lastfm.rs`:
 
 ```rust
-const API_KEY:    &str = "tu_api_key_aquí";
-const API_SECRET: &str = "tu_shared_secret_aquí";
+const API_KEY:    &str = "your_api_key_here";
+const API_SECRET: &str = "your_shared_secret_here";
 ```
 
-5. Recompilar: `cargo build --release`
+5. Recompile: `cargo build --release`
 
-6. En RPlayer: Vista → Configuración → sección Last.fm
-   - Ingresar usuario y contraseña
-   - Hacer clic en "Autenticar"
+6. In RPlayer: View → Settings → Last.fm section
+   - Enter username and password
+   - Click "Authenticate"
 
-### Qué se registra
+### What is recorded
 
-- "Now Playing" al cargar un archivo
-- Scrobble cuando se reproducen al menos 30 segundos **y** el 50% de la duración (o 4 minutos, lo que sea menor) — estándar de Last.fm
+- "Now Playing" when loading a file
+- Scrobble when playing at least 30 seconds **and** 50% of the duration (or 4 minutes, whichever is less) — Last.fm standard
 
 ---
 
-## OpenSubtitles — Descarga automática de subtítulos
+## OpenSubtitles — Automatic subtitle download
 
-Busca y descarga subtítulos directamente desde OpenSubtitles.org.
+Search and download subtitles directly from OpenSubtitles.org.
 
-### Plan gratuito
+### Free plan
 
-- 5 descargas por día
-- Acceso a más de 7 millones de subtítulos en 100+ idiomas
+- 5 downloads per day
+- Access to more than 7 million subtitles in 100+ languages
 
-### Pasos
+### Steps
 
-1. Crear cuenta gratuita en https://www.opensubtitles.com/en/consumers
-2. Ir a https://www.opensubtitles.com/en/consumers → "API"
-3. Copiar la **Consumer API key**
-4. Editar `src/opensubtitles.rs`:
+1. Create a free account at https://www.opensubtitles.com/en/consumers
+2. Go to https://www.opensubtitles.com/en/consumers → "API"
+3. Copy the **Consumer API key**
+4. Edit `src/opensubtitles.rs`:
 
 ```rust
-const API_KEY: &str = "tu_api_key_aquí";
+const API_KEY: &str = "your_api_key_here";
 ```
 
-5. Recompilar: `cargo build --release`
+5. Recompile: `cargo build --release`
 
-### Uso en RPlayer
+### Use in RPlayer
 
-Vista → "Bajar subtítulos" → escribir el título → seleccionar idioma → Buscar → seleccionar resultado → descargar.
+View → "Download subtitles" → write the title → select language → Search → select result → download.
 
-El subtítulo se guarda en el mismo directorio del archivo de video y se carga automáticamente.
+The subtitle is saved in the same directory as the video file and loaded automatically.
 
 ---
 
-## Donaciones (Patreon)
+## Donations (Patreon)
 
-Si quieres añadir un banner de donación a tu distribución del reproductor, editar `src/donation.rs`:
+If you want to add a donation banner to your player distribution, edit `src/donation.rs`:
 
 ```rust
-const PATREON_URL: &str = "https://patreon.com/tu_usuario";
+const PATREON_URL: &str = "https://patreon.com/your_username";
 ```
 
-El banner aparece en la parte inferior de la ventana y puede cerrarse permanentemente.
+The banner appears at the bottom of the window and can be closed permanently.

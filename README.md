@@ -1,14 +1,14 @@
 # RPlayer
 
-Reproductor de video y audio libre para Linux y Windows. Sin publicidad. Sin telemetría.
+Free video and audio player for Linux and Windows. No advertising. No telemetry.
 
 **v0.5.0-alpha** — Rust · egui · libmpv · OpenGL
 
 ---
 
-## Inicio rápido
+## Quick start
 
-### Camino más simple
+### Simpler way
 
 ```bash
 cargo build --release
@@ -24,7 +24,7 @@ sudo dnf install mpv-libs mpv-libs-devel ffmpeg yt-dlp
 cargo build --release
 ```
 
-Ubuntu / Debian:
+Ubuntu/Debian:
 
 ```bash
 sudo apt install libmpv-dev ffmpeg yt-dlp
@@ -33,145 +33,145 @@ cargo build --release
 
 ### Windows
 
-1. Descargar `mpv-dev-x86_64.7z` de https://sourceforge.net/projects/mpv-player-windows/files/libmpv/
-2. Copiar `libmpv-2.dll` al mismo directorio que el `.exe` (o a `vendor/mpv` en desarrollo)
-3. Instalar `ffmpeg` y `yt-dlp` y agregarlos al `PATH`
+1. Download `mpv-dev-x86_64.7z` from https://sourceforge.net/projects/mpv-player-windows/files/libmpv/
+2. Copy `libmpv-2.dll` to the same directory as `.exe` (or to `vendor/mpv` in development)
+3. Install `ffmpeg` and `yt-dlp` and add them to `PATH`
 4. `cargo build --release`
 
 ---
 
-## Build opcional
+## Optional build
 
-Los scripts de `scripts/` son auxiliares.
+The `scripts/` scripts are auxiliary.
 
-- `./scripts/build-release.sh [--package]` — build de release en Linux/WSL y empaqueta opcionalmente.
-- `./scripts/build-release.ps1 [-Package]` — build de release en Windows y genera instalador Inno Setup si está disponible.
-- `./scripts/setup-mpv-windows.ps1 -MpvDllPath <ruta>` — genera `mpv.lib` para builds MSVC cuando usas libmpv de Windows.
+- `./scripts/build-release.sh [--package]` — release build on Linux/WSL and optional packaging.
+- `./scripts/build-release.ps1 [-Package]` — release build on Windows and generates Inno Setup installer if available.
+- `./scripts/setup-mpv-windows.ps1 -MpvDllPath <path>` — generates `mpv.lib` for MSVC builds when using Windows libmpv.
 
-Para detalles completos, consulta `docs/BUILDING.md`.
+For complete details, see `docs/BUILDING.md`.
 
 ---
 
-## Variables de entorno opcionales
+## Optional environment variables
 
-Para compilar con API keys reales, copia `.env.example` a `.env` y define las variables antes de compilar.
+To compile with real API keys, copy `.env.example` to `.env` and define the variables before compiling.
 
 ```bash
 source .env && cargo build --release
 ```
 
-> No comitees `.env` con valores reales. Usa `.env.example` como plantilla.
+> Don't commit `.env` with real values. Use `.env.example` as a template.
 
 ---
 
-## Características
+## Characteristics
 
-- **Formatos**: MP4, MKV, AVI, WebM, MP3, FLAC, OGG, AAC, OPUS, CDG y 100+ más
-- **Playlist** con importación/exportación M3U/PLS
-- **Repetición**: sin / una pista / toda la lista · **Shuffle** · **A-B Loop**
-- **Frame a frame** con `.` y `,`
-- **Ecualizador paramétrico (PEQ)** 6 filtros con presets, preamp y anti-clipping
-- **Controles de imagen**: brillo, contraste, saturación, matiz, gamma, zoom, rotación, flip, deinterlace e integer scaling
+- **Formats**: MP4, MKV, AVI, WebM, MP3, FLAC, OGG, AAC, OPUS, CDG and 100+ more
+- **Playlist** with M3U/PLS import/export
+- **Repeat**: without / one track / the entire list · **Shuffle** · **A-B Loop**
+- **Frame by frame** with `.` and `,`
+- **Parametric equalizer (PEQ)** 6 filters with presets, preamp and anti-clipping
+- **Image controls**: brightness, contrast, saturation, hue, gamma, zoom, rotation, flip, deinterlace and integer scaling
 - **Picture-in-Picture** always-on-top
-- **Karaoke** .CDG (auto-detecta el archivo junto al MP3)
-- **Subtítulos dobles** (dos idiomas simultáneos)
-- **Descarga automática** de subtítulos via OpenSubtitles.org
-- **Recorte sin re-encodear** via ffmpeg
-- **Conversión de formatos** (H.264, H.265, VP9, MP3, FLAC, AAC, OGG)
+- **Karaoke** .CDG (auto-detects the file along with the MP3)
+- **Double subtitles** (two languages ​​simultaneously)
+- **Automatic download** of subtitles via OpenSubtitles.org
+- **Trim without re-encoding** via ffmpeg
+- **Format conversion** (H.264, H.265, VP9, ​​MP3, FLAC, AAC, OGG)
 - **Sleep timer**
-- **Control remoto HTTP** en `http://localhost:7890`
-- **Historial** con reanudación automática de posición
-- **Marcadores**, **notas** y **capítulos** por archivo
-- **9 temas de color** + editor custom de paleta
-- **UI bilingüe** (Español / English)
-- **Reporte de bugs** desde la app (copiar reporte técnico y abrir canal configurable)
-- **Actualizaciones**: chequeo automático al iniciar (opcional), chequeo manual e instalación con fallback/rollback
-- **Menús contextuales** en video, playlist, historial y marcadores
-- **Scrobbling a Last.fm** y streaming via yt-dlp
+- **HTTP remote control** in `http://localhost:7890`
+- **History** with automatic position resumption
+- **Bookmarks**, **notes** and **chapters** per file
+- **9 color themes** + custom palette editor
+- **Bilingual UI** (Spanish / English)
+- **Bug report** from the app (copy technical report and open configurable channel)
+- **Updates**: automatic check on startup (optional), manual check and installation with fallback/rollback
+- **Contextual menus** in video, playlist, history and bookmarks
+- **Scrobbling to Last.fm** and streaming via yt-dlp
 
 ---
 
-## Atajos de teclado
+## Keyboard shortcuts
 
-| Tecla               | Acción                       |
+| Key               | Action                       |
 | ------------------- | ---------------------------- |
-| `Espacio`           | Play / Pausa                 |
+| `Space`             | Play/Pause                 |
 | `→` `←`             | ±5s                          |
 | `Shift+→` `Shift+←` | ±60s                         |
-| `Ctrl+→` `Ctrl+←`   | Rotar ±90°                   |
-| `↑` `↓`             | Volumen ±5%                  |
-| `M`                 | Silenciar                    |
-| `N` `P`             | Siguiente / Anterior         |
-| `.` `,`             | Frame adelante / atrás       |
-| `R`                 | A-B Loop (cicla A→B→limpiar) |
-| `S`                 | Capturar frame PNG           |
-| `B`                 | Añadir marcador              |
-| `Ctrl+O`            | Abrir archivo                |
+| `Ctrl+→` `Ctrl+←`   | Rotate ±90°                   |
+| `↑` `↓`             | Volume ±5%                  |
+| `M`                 | Mute                    |
+| `N` `P`             | Next / Previous         |
+| `.` `,`             | Frame forward/backward       |
+| `R`                 | A-B Loop (cycle A→B→clear) |
+| `S`                 | Capture frame PNG           |
+| `B`                 | Add bookmark              |
+| `Ctrl+O`            | Open file                |
 
 ---
 
-## Menús contextuales
+## Context menus
 
-**Clic derecho en el video** — Play/pausa · Saltar · Volumen · Audio/Subs · Aspecto · Imagen · Recortar · Convertir · Info de medios
+**Right click on video** — Play/pause · Skip · Volume · Audio/Subs · Aspect · Image · Crop · Convert · Media info
 
-**Clic derecho en playlist** — Reproducir · Mover arriba/abajo · Marcador · Copiar ruta · Abrir en explorador · Quitar · Limpiar
+**Right click on playlist** — Play · Move up/down · Bookmark · Copy path · Open in browser · Remove · Clear
 
-**Clic derecho en historial** — Abrir · Explorador · Copiar ruta · Quitar · Limpiar
+**Right click on history** — Open · Explorer · Copy path · Remove · Clear
 
-**Clic derecho en marcador** — Ir · Renombrar · Eliminar
-
----
-
-## Actualizaciones y fallback
-
-- Puedes activar o desactivar `Buscar actualizaciones al iniciar` en **Configuración**.
-- Puedes ejecutar `Buscar actualizaciones ahora` manualmente en cualquier momento.
-- Si se instala una actualización y la nueva versión falla la validación interna, RPlayer restaura automáticamente la versión anterior (rollback).
+**Right click on bookmark** — Go · Rename · Delete
 
 ---
 
-## Reporte de bugs en producción
+## Updates and fallback
 
-- Menú: **Ayuda → Reportar bug...**
-- Genera un reporte con datos técnicos de runtime (versión, SO, estado de reproducción, etc.).
-- Puedes copiar el reporte al portapapeles y abrir un canal de reporte (GitHub Issues, formulario o `mailto`) configurable en **Configuración → Reportes de bugs**.
+- You can enable or disable "Check for updates on startup" in **Settings**.
+- You can run "Check for updates now" manually at any time.
+- If an update is installed and the new version fails internal validation, RPlayer automatically restores the previous version (rollback).
 
 ---
 
-## API Keys opcionales
+## Bug report in production
 
-| Servicio           | Archivo                | Link                                       |
+- Menu: **Help → Report bug...**
+- Generates a report with technical runtime data (version, OS, playback status, etc.).
+- You can copy the report to the clipboard and open a reporting channel (GitHub Issues, form or `mailto`) configurable in **Settings → Bug reports**.
+
+---
+
+## Optional API Keys
+
+| Service           | File                   | Link                                       |
 | ------------------ | ---------------------- | ------------------------------------------ |
 | Last.fm scrobbling | `src/lastfm.rs`        | https://www.last.fm/api/account/create     |
 | OpenSubtitles      | `src/opensubtitles.rs` | https://www.opensubtitles.com/en/consumers |
 
-Ver [docs/API_KEYS.md](docs/API_KEYS.md) para instrucciones detalladas.
+See [docs/API_KEYS.md](docs/API_KEYS.md) for detailed instructions.
 
 ---
 
-## Pruebas y calidad de código
+## Testing and code quality
 
-Antes de subir cambios a GitHub, es recomendable verificar el formato, la calidad del código y ejecutar las pruebas locales.
+Before uploading changes to GitHub, it is advisable to check the formatting, code quality, and run local tests.
 
-### Ganchos de pre-commit
+### Pre-commit hooks
 
-El proyecto incluye ganchos (hooks) de pre-commit para automatizar estas revisiones. Para activarlos:
+The project includes pre-commit hooks to automate these reviews. To activate them:
 
-1. Asegúrate de tener instalado `pre-commit` (o mediante Python: `pip install pre-commit`).
-2. Instala los ganchos en tu copia local:
+1. Make sure you have `pre-commit` installed (or via Python: `pip install pre-commit`).
+2. Install the hooks on your local copy:
    ```bash
    pre-commit install
    ```
 
-Esto ejecutará comprobaciones de formato (`cargo fmt`) y análisis estático (`cargo clippy`) en cada commit. También puedes correr los ganchos manualmente sobre todos los archivos:
+This will run format checks (`cargo fmt`) and static analysis (`cargo clippy`) on each commit. You can also run the hooks manually on all files:
 
 ```bash
 pre-commit run --all-files
 ```
 
-### Ejecutar pruebas manualmente
+### Run tests manually
 
-Para compilar y ejecutar las pruebas locales:
+To compile and run local tests:
 
 ```bash
 cargo test --all
@@ -179,16 +179,16 @@ cargo test --all
 
 ---
 
-## Documentación
+## Documentation
 
-- [BUILDING.md](docs/BUILDING.md) — Compilación en Linux, Windows, CI
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — Diseño y estructura del código
-- [SHORTCUTS.md](docs/SHORTCUTS.md) — Referencia completa de atajos
-- [API_KEYS.md](docs/API_KEYS.md) — Configuración de servicios externos
-- [website/](website/README.md) — Landing web del proyecto (descargas, soporte, monetización)
+- [BUILDING.md](docs/BUILDING.md) — Build on Linux, Windows, CI
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — Code design and structure
+- [SHORTCUTS.md](docs/SHORTCUTS.md) — Complete Shortcut Reference
+- [API_KEYS.md](docs/API_KEYS.md) — External services configuration
+- [website/](website/README.md) — Project web landing (downloads, support, monetization)
 
 ---
 
-## Licencia
+## License
 
-MIT
+M.I.T.

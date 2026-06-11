@@ -1,116 +1,116 @@
-# Atajos de teclado — RPlayer
+# Keyboard shortcuts — RPlayer
 
-## Reproducción
+## Reproduction
 
-| Tecla | Acción |
+| Key | Action |
 |-------|--------|
-| `Espacio` | Play / Pausa |
-| `N` | Siguiente pista |
-| `P` | Pista anterior |
-| `→` | Avanzar 5 segundos |
-| `←` | Retroceder 5 segundos |
-| `Shift+→` | Avanzar 60 segundos |
-| `Shift+←` | Retroceder 60 segundos |
-| `.` | Frame adelante (requiere pausa) |
-| `,` | Frame atrás (requiere pausa) |
-| `R` | Ciclar A-B loop: marcar A → marcar B → limpiar |
+| `Space` | Play/Pause |
+| `N` | next track |
+| `P` | Previous track |
+| `→` | Go forward 5 seconds |
+| `←` | Go back 5 seconds |
+| `Shift+→` | Skip ahead 60 seconds |
+| `Shift+←` | Go back 60 seconds |
+| `.` | Frame forward (requires pause) |
+| `,` | Frame back (requires pause) |
+| `R` | Cycle A-B loop: mark A → mark B → clear |
 
 ## Audio
 
-| Tecla | Acción |
+| Key | Action |
 |-------|--------|
-| `↑` | Subir volumen 5% |
-| `↓` | Bajar volumen 5% |
-| `M` | Silenciar / Dessilenciar |
-| `+` | Aumentar velocidad 0.25× |
-| `-` | Reducir velocidad 0.25× |
-| `=` | Restablecer velocidad a 1× |
+| `↑` | Increase volume 5% |
+| `↓` | Reduce volume 5% |
+| `M` | Mute / Unmute |
+| `+` | Increase speed 0.25× |
+| `-` | Reduce speed 0.25× |
+| `=` | Reset speed to 1× |
 
-## Video y captura
+## Video and capture
 
-| Tecla | Acción |
+| Key | Action |
 |-------|--------|
-| `S` | Capturar frame PNG en ~/Pictures/RPlayer/ |
-| `Ctrl+→` | Rotar video +90° |
-| `Ctrl+←` | Rotar video -90° |
+| `S` | Capture frame PNG in ~/Pictures/RPlayer/ |
+| `Ctrl+→` | Rotate video +90° |
+| `Ctrl+←` | Rotate video -90° |
 
-## Organización
+## Organization
 
-| Tecla | Acción |
+| Key | Action |
 |-------|--------|
-| `B` | Añadir marcador en la posición actual |
+| `B` | Add marker at current position |
 
-## Archivos
+## Files
 
-| Tecla | Acción |
+| Key | Action |
 |-------|--------|
-| `Ctrl+O` | Abrir archivo |
-| `Ctrl+U` | Abrir URL / Stream |
+| `Ctrl+O` | Open file |
+| `Ctrl+U` | Open URL/Stream |
 
 ## Drag & Drop
 
-Arrastra archivos de video, audio o .CDG directamente sobre la ventana para abrirlos o añadirlos a la playlist.
+Drag video, audio or .CDG files directly onto the window to open them or add them to the playlist.
 
 ---
 
-## Menús contextuales (clic derecho)
+## Context menus (right click)
 
-### Área de video
+### Video area
 
-| Acción | Descripción |
+| Action | Description |
 |--------|-------------|
-| Play / Pausa | Toggle de reproducción |
-| Detener | Detiene y resetea posición |
-| Saltar... | Submenú con +5s, +60s, -5s, -60s |
-| Silenciar / Activar sonido | Toggle mute |
-| Subir / Bajar volumen | ±5% |
-| Normalización de volumen | Activa/desactiva loudnorm |
-| Audio y subtítulos | Abre submenú con paneles de audio, subs, EQ, sync |
-| Capturar frame | Guarda PNG |
-| Picture-in-Picture | Ventana flotante always-on-top |
-| Relación de aspecto | Auto / 4:3 / 16:9 / 21:9 / 1:1 |
-| Imagen y video | Controles detallados (brillo/contraste/zoom/rotación) |
-| Recortar video... | Abre panel de recorte |
-| Convertir formato... | Abre panel de conversión |
-| Información de medios | Muestra codec, resolución, bitrate, etc. |
+| Play/Pause | Playback toggle |
+| Stop | Stop and reset position |
+| Skip... | Submenu with +5s, +60s, -5s, -60s |
+| Mute/Unmute | Toggle mute |
+| Volume up/down | ±5% |
+| Volume normalization | Activate/deactivate loudnorm |
+| Audio and subtitles | Open submenu with audio panels, subs, EQ, sync |
+| Capture frame | Save PNG |
+| Picture-in-Picture | Always-on-top floating window |
+| aspect ratio | Auto / 4:3 / 16:9 / 21:9 / 1:1 |
+| Image and video | Detailed controls (brightness/contrast/zoom/rotation) |
+| Trim video... | Open cropping panel |
+| Convert format... | Open conversion panel |
+| Media information | Shows codec, resolution, bitrate, etc. |
 
-### Ítem de playlist
+### Playlist item
 
-| Acción | Descripción |
+| Action | Description |
 |--------|-------------|
-| Reproducir | Reproduce este archivo |
-| Mover arriba | Sube la posición en la lista |
-| Mover abajo | Baja la posición en la lista |
-| Añadir marcador | Crea marcador con la posición actual |
-| Copiar ruta | Copia la ruta al portapapeles |
-| Mostrar en explorador | Abre el directorio del archivo |
-| Quitar de la lista | Elimina de la playlist (no del disco) |
-| Limpiar lista | Vacía toda la playlist |
+| Play | Play this file |
+| Move up | Raise your position on the list |
+| Move down | Lower your position on the list |
+| Add bookmark | Create marker with current position |
+| Copy path | Copy the path to the clipboard |
+| Show in explorer | Open the file directory |
+| Remove from list | Delete from playlist (not from disk) |
+| Clear list | Empty the entire playlist |
 
-### Ítem del historial
+### History item
 
-| Acción | Descripción |
+| Action | Description |
 |--------|-------------|
-| Abrir | Reproduce el archivo |
-| Mostrar en explorador | Abre el directorio |
-| Copiar ruta | Copia la ruta al portapapeles |
-| Quitar del historial | Elimina solo esta entrada |
-| Limpiar historial | Borra todo el historial |
+| Open | Play the file |
+| Show in explorer | Open the directory |
+| Copy path | Copy the path to the clipboard |
+| Remove from history | Delete only this entry |
+| Clear history | Delete all history |
 
-### Marcador
+### Marker
 
-| Acción | Descripción |
+| Action | Description |
 |--------|-------------|
-| Ir a este marcador | Salta a la posición |
-| Renombrar | Cambia la etiqueta |
-| Eliminar marcador | Elimina el marcador |
+| Go to this bookmark | Jump into position |
+| Rename | Change the label |
+| Delete bookmark | Delete the marker |
 
 ---
 
-## Notas de uso
+## Usage Notes
 
-- **A-B Loop**: Presiona `R` una vez para marcar el punto A, otra vez para marcar B, y una tercera vez para limpiar ambos. Los marcadores A y B aparecen como líneas en la seekbar.
+- **A-B Loop**: Press `R` once to mark point A, again to mark B, and a third time to clear both. Markers A and B appear as lines in the seekbar.
 
-- **Frame a frame**: Solo funciona con el video pausado. Útil para análisis de movimiento, sports, animación.
+- **Frame by frame**: Only works with the video paused. Useful for motion analysis, sports, animation.
 
-- **Captura de frames**: Se guarda en `~/Pictures/RPlayer/` (Linux) o `%USERPROFILE%\Pictures\RPlayer\` (Windows). El nombre incluye el timestamp.
+- **Frame capture**: Saved in `~/Pictures/RPlayer/` (Linux) or `%USERPROFILE%\Pictures\RPlayer\` (Windows). The name includes the timestamp.

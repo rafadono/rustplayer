@@ -1,17 +1,17 @@
-# Compilación de RPlayer
+# RPlayer Build
 
-## Requisitos comunes
+## Common requirements
 
-- **Rust** 1.75 o superior
-- **Cargo** (incluido con Rust)
+- **Rust** 1.75 or higher
+- **Fee** (included with Rust)
 
-Instalar Rust: https://rustup.rs
+Install Rust: https://rustup.rs
 
 ---
 
 ## Linux
 
-### Fedora
+### fedora
 
 ```bash
 sudo dnf install mpv-libs mpv-libs-devel pkg-config ffmpeg yt-dlp gcc openssl-devel
@@ -19,7 +19,7 @@ cargo build --release
 ./target/release/rplayer
 ```
 
-### Ubuntu / Debian
+### Ubuntu/Debian
 
 ```bash
 sudo apt update
@@ -28,7 +28,7 @@ cargo build --release
 ./target/release/rplayer
 ```
 
-### Arch Linux
+### ArchLinux
 
 ```bash
 sudo pacman -S mpv ffmpeg yt-dlp base-devel pkg-config
@@ -40,7 +40,7 @@ cargo build --release
 
 ## Windows
 
-### Con MinGW (cross-compile desde Linux)
+### With MinGW (cross-compile from Linux)
 
 ```bash
 rustup target add x86_64-pc-windows-gnu
@@ -49,14 +49,14 @@ sudo apt install mingw-w64      # Ubuntu
 cargo build --release --target x86_64-pc-windows-gnu
 ```
 
-### Con MSVC (Windows nativo)
+### With MSVC (native Windows)
 
-1. Instalar Visual Studio Build Tools: https://visualstudio.microsoft.com/downloads/
-2. Instalar Rust para Windows: https://rustup.rs
-3. Descargar libmpv: https://sourceforge.net/projects/mpv-player-windows/files/libmpv/
-4. Configurar `MPV_LIB_PATH` y `PKG_CONFIG_PATH`, o usar `scripts/setup-mpv-windows.ps1`.
+1. Install Visual Studio Build Tools: https://visualstudio.microsoft.com/downloads/
+2. Install Rust for Windows: https://rustup.rs
+3. Download libmpv: https://sourceforge.net/projects/mpv-player-windows/files/libmpv/
+4. Set `MPV_LIB_PATH` and `PKG_CONFIG_PATH`, or use `scripts/setup-mpv-windows.ps1`.
 
-Si estás usando `vendor/mpv`, el build script copiará automáticamente `libmpv-2.dll` al directorio `target/debug` o `target/release`.
+If you are using `vendor/mpv`, the build script will automatically copy `libmpv-2.dll` to the `target/debug` or `target/release` directory.
 
 ```powershell
 $env:MPV_LIB_PATH = "C:\libs\mpv"
@@ -66,17 +66,17 @@ cargo build --release
 
 ---
 
-## Scripts de build recomendados
+## Recommended build scripts
 
-El camino más directo es `cargo build --release`.
+The most direct path is `cargo build --release`.
 
-- `./scripts/build-release.sh [--package]` — build de release en Linux/WSL y empaqueta opcionalmente.
-- `./scripts/build-release.ps1 [-Package]` — build de release en Windows y genera instalador Inno Setup si está disponible.
-- `./scripts/setup-mpv-windows.ps1 -MpvDllPath <ruta>` — genera `mpv.lib` para builds MSVC con Windows.
+- `./scripts/build-release.sh [--package]` — release build on Linux/WSL and optional packaging.
+- `./scripts/build-release.ps1 [-Package]` — release build on Windows and generates Inno Setup installer if available.
+- `./scripts/setup-mpv-windows.ps1 -MpvDllPath <ruta>` — generates `mpv.lib` for MSVC builds with Windows.
 
 ---
 
-## Variables de entorno útiles
+## Useful environment variables
 
 ```bash
 RUST_LOG=debug     # Activa logs de debug
@@ -87,28 +87,28 @@ MPV_VERBOSE=1      # Logs de libmpv
 
 ---
 
-## Actualizaciones in-app (auto/manual + rollback)
+## In-app updates (auto/manual + rollback)
 
-- RPlayer permite:
-  - chequeo automático al iniciar (configurable),
-  - chequeo manual desde Configuración,
-  - instalación de update desde la UI.
-- Durante instalación, se crea backup del ejecutable actual (`.bak`).
-- La versión nueva se valida con `--self-check`; si falla, se restaura automáticamente el backup (fallback).
+- RPlayer allows:
+  - automatic check on startup (configurable),
+  - manual check from Settings,
+  - update installation from the UI.
+- During installation, a backup of the current executable (`.bak`) is created.
+- The new version is validated with `--self-check`; If it fails, the backup is automatically restored (fallback).
 
-### Self-check interno
+### Internal self-check
 
-El flag `--self-check` es usado por el flujo de updater para validar que el binario arranca correctamente sin abrir la UI principal:
+The `--self-check` flag is used by the updater flow to validate that the binary boots correctly without opening the main UI:
 
 ```bash
 rplayer --self-check
 ```
 
-Si devuelve código de salida distinto de 0, la instalación se considera fallida y se ejecuta rollback.
+If it returns an exit code other than 0, the installation is considered failed and a rollback is executed.
 
 ---
 
-## Estructura del artefacto de distribución
+## Distribution artifact structure
 
 ```
 rplayer/
@@ -120,9 +120,9 @@ rplayer/
 
 ---
 
-## Compilación con Docker
+## Compilation with Docker
 
-Ver [docker-compose.yml](../docker-compose.yml) en la raíz del proyecto.
+See [docker-compose.yml](../docker-compose.yml) in the project root.
 
 ```bash
 # Build Linux release dentro de Docker
@@ -133,37 +133,37 @@ docker compose run --rm build-linux
 
 ---
 
-## CI / GitHub Actions
+## CI/GitHub Actions
 
-El archivo `.github/workflows/ci.yml` ejecuta automáticamente las siguientes tareas al subir código o crear un pull request:
+The `.github/workflows/ci.yml` file automatically executes the following tasks when you upload code or create a pull request:
 
-- `cargo fmt --all -- --check` — Verifica el formato y estilo del código
-- `cargo clippy --all-targets --all-features -- -D warnings` — Ejecuta el linter estático de Rust
-- `cargo test --all` — Ejecuta las pruebas unitarias e integradas
-- `cargo audit` — Verifica vulnerabilidades conocidas de seguridad en dependencias
-- `cargo build --release` — Genera el ejecutable de producción (solo en push a la rama `main`)
+- `cargo fmt --all -- --check` — Check the code format and style
+- `cargo clippy --all-targets --all-features -- -D warnings` — Run the Rust static linter
+- `cargo test --all` — Runs unit and integrated tests
+- `cargo audit` — Checks for known security vulnerabilities in dependencies
+- `cargo build --release` — Generate the production executable (only in push to branch `main`)
 
-### Verificación local previa a subir a GitHub
+### Local verification prior to uploading to GitHub
 
-Para asegurar que tu código pasa las comprobaciones de integración continua, puedes configurar y ejecutar las revisiones de forma local:
+To ensure that your code passes continuous integration checks, you can configure and run the checks locally:
 
-1. **Ganchos de pre-commit**:
+1. **Pre-commit hooks**:
    ```bash
    pre-commit install
    ```
-   Esto ejecutará automáticamente `cargo fmt` y `cargo clippy` antes de cada confirmación de cambios. Puedes correrlos manualmente en cualquier momento:
+This will automatically run `cargo fmt` and `cargo clippy` before each change commit. You can run them manually at any time:
    ```bash
    pre-commit run --all-files
    ```
 
-2. **Ejecución manual de pruebas**:
+2. **Manual test execution**:
    ```bash
    cargo test --all
    ```
 
 ---
 
-## Solución de problemas comunes
+## Common Problem Solving
 
 **Error: `libmpv.so not found`**
 
@@ -174,16 +174,16 @@ sudo dnf install mpv-libs
 ```
 
 **Error: `mpv-2.dll not found` (Windows)**
-Asegurarse de que `libmpv-2.dll` está en el mismo directorio que el `.exe` (o en `vendor/mpv` y con `RPLAYER_MPV_LIB_DIR` configurado).
+Make sure `libmpv-2.dll` is in the same directory as `.exe` (or in `vendor/mpv` and with `RPLAYER_MPV_LIB_DIR` configured).
 
-**Video no se muestra (pantalla negra)**
-Verificar que el sistema tiene soporte OpenGL:
+**Video not displayed (black screen)**
+Verify that the system has OpenGL support:
 
 ```bash
 glxinfo | grep "OpenGL version"
 ```
 
-**ffmpeg no encontrado**
+**ffmpeg not found**
 
 ```bash
 which ffmpeg
@@ -192,11 +192,11 @@ which ffmpeg
 
 ---
 
-## Protección del binario
+## Binary protection
 
-RPlayer aplica tres capas de protección en el build de release:
+RPlayer applies three layers of protection in the release build:
 
-### 1. Perfil de release endurecido (`Cargo.toml`)
+### 1. Hardened release profile (`Cargo.toml`)
 
 ```toml
 [profile.release]
@@ -206,11 +206,11 @@ codegen-units = 1     # Un solo chunk de código
 panic = "abort"       # Sin mensajes de panic con nombres de archivos .rs
 ```
 
-### 2. API keys ofuscadas con `obfstr`
+### 2. API keys obfuscated with `obfstr`
 
-Las keys **no aparecen en texto plano** en el binario. No se pueden extraer con `strings binario`.
+The keys **do not appear in plain text** in the binary. They cannot be extracted with `strings binario`.
 
-Para compilar con tus keys reales:
+To compile with your real keys:
 
 ```bash
 # Linux / macOS
@@ -224,17 +224,17 @@ $env:RUSTPLAYER_OPENSUBS_KEY="tu_key"
 cargo build --release
 ```
 
-### 3. Instalador Windows comprimido
+### 3. Compressed Windows Installer
 
-El instalador generado con Inno Setup usa `lzma2/ultra64 + SolidCompression`.
-El `.exe` interno no se puede extraer directamente con 7-Zip ni herramientas similares.
+The installer generated with Inno Setup uses `lzma2/ultra64 + SolidCompression`.
+The internal `.exe` cannot be extracted directly with 7-Zip or similar tools.
 
-### Qué protege y qué no
+### What protects and what doesn't
 
-| Amenaza                           | Estado                                                              |
+| Threat                           | State                                                              |
 | --------------------------------- | ------------------------------------------------------------------- |
-| Extraer código fuente del binario | No es posible — el código fuente nunca existe en el binario         |
-| Leer API keys con `strings`       | Protegido — obfstr las encripta en compile-time                     |
-| Ver paths de archivos .rs         | Protegido — `strip=true` + `panic=abort`                            |
-| Desensamblar la lógica general    | Parcial — LTO y `codegen-units=1` lo dificultan, pero no lo impiden |
-| Redistribuir el binario           | No protegido en esta versión                                        |
+| Extract source code from binary | Not possible — the source code never exists in the binary         |
+| Read API keys with `strings`       | Protected — obfstr encrypts them at compile-time                     |
+| View .rs file paths         | Protected — `strip=true` + `panic=abort`                            |
+| Disassemble the general logic    | Partial — LTO and `codegen-units=1` make it difficult, but do not prevent it |
+| Redistribute the binary           | Not protected in this version                                        |
