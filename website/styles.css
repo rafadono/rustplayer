@@ -1,0 +1,273 @@
+:root {
+  --bg: #11131a;
+  --bg-soft: #171a24;
+  --card: #1d2231;
+  --text: #e9edf8;
+  --muted: #9da6c3;
+  --line: #2c344b;
+  --brand: #ff6f3d;
+  --brand-2: #52c7c8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Space Grotesk", sans-serif;
+  background:
+    radial-gradient(1000px 600px at 100% -10%, #1d2440 0%, transparent 65%),
+    radial-gradient(900px 500px at -15% 20%, #25203d 0%, transparent 60%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: rgba(17, 19, 26, 0.92);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand img {
+  width: 26px;
+  height: 26px;
+}
+
+.brand strong {
+  font-family: "Sora", sans-serif;
+  letter-spacing: 0.2px;
+}
+
+nav {
+  display: flex;
+  gap: 0.9rem;
+}
+
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+nav a:hover {
+  color: var(--text);
+}
+
+.lang-toggle {
+  margin-left: 0.2rem;
+  border: 1px solid #4a5577;
+  background: #20263a;
+  color: #e9edf8;
+  border-radius: 8px;
+  padding: 0.2rem 0.55rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lang-toggle:hover {
+  background: #27304b;
+}
+
+main {
+  width: min(1100px, 94vw);
+  margin: 1.5rem auto 3rem auto;
+  display: grid;
+  gap: 1.1rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Sora", sans-serif;
+  margin: 0 0 0.5rem 0;
+}
+
+.hero {
+  padding: 1.3rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(82, 199, 200, 0.1), rgba(255, 111, 61, 0.12));
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.24rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid #3b4563;
+  color: #c4cee9;
+  font-size: 0.8rem;
+}
+
+.hero h1 {
+  margin-top: 0.7rem;
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+}
+
+.lead {
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.cta-row {
+  margin-top: 0.9rem;
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  transition: transform 0.16s ease, opacity 0.16s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.96;
+}
+
+.btn.primary {
+  background: var(--brand);
+  border-color: #f95d23;
+  color: #1c0b05;
+}
+
+.btn.ghost {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.btn.patreon {
+  background: #ff5f5f;
+  color: #220606;
+  border-color: #ff4747;
+}
+
+.card,
+.ad-block {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.download-card {
+  border: 1px solid #323a53;
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.9rem;
+}
+
+.timeline-wrap {
+  margin-top: 0.7rem;
+}
+
+.timeline {
+  border: 1px solid #323a53;
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.9rem;
+}
+
+.note {
+  color: var(--muted);
+  margin-top: 0.9rem;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+}
+
+.ad-slot {
+  margin-top: 0.5rem;
+  border: 1px dashed #485476;
+  border-radius: 10px;
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #aab3ce;
+  padding: 1rem;
+}
+
+.ad-slot span {
+  display: block;
+  color: #7f89a8;
+  font-size: 0.86rem;
+  margin-top: 0.35rem;
+}
+
+a {
+  color: var(--brand-2);
+}
+
+footer {
+  width: min(1100px, 94vw);
+  margin: 0 auto 2rem auto;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 920px) {
+  .grid.three {
+    grid-template-columns: 1fr;
+  }
+  .grid.two {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  nav {
+    flex-wrap: wrap;
+  }
+}

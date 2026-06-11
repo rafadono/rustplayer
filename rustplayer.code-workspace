@@ -1,0 +1,35 @@
+{
+    "folders": [
+        {
+            "name": "RustPlayer",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "rust-analyzer.checkOnSave.command": "clippy",
+        "editor.formatOnSave": true,
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.env.linux": {
+            "RUST_LOG": "debug",
+            "RUST_BACKTRACE": "1"
+        },
+        "terminal.integrated.env.windows": {
+            "RUST_LOG": "debug",
+            "RUST_BACKTRACE": "1"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "rust-lang.rust-analyzer",
+            "vadimcn.vscode-lldb",
+            "tamasfe.even-better-toml",
+            "serayuzgur.crates",
+            "eamodio.gitlens",
+            "usernamehw.errorlens"
+        ]
+    },
+    "launch": {
+        "configurations": [],
+        "compounds": []
+    }
+}

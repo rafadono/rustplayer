@@ -1,0 +1,135 @@
+# RPlayer â€” docker-compose.yml
+#
+# PROPÃ“SITO: CompilaciÃ³n y CI/CD. No para ejecutar el reproductor.
+# El reproductor requiere display, OpenGL y audio del host.
+#
+# Comandos Ãºtiles:
+#
+#   Compilar para Linux (Fedora):
+#     docker compose run --rm build-linux
+#
+#   Compilar para Linux (Ubuntu, mayor compatibilidad):
+#     docker compose run --rm build-ubuntu
+#
+#   Ejecutar lint y check:
+#     docker compose run --rm lint
+#
+#   Ejecutar tests:
+#     docker compose run --rm test
+#
+#   Ver logs del build:
+#     docker compose run --rm build-linux 2>&1 | tee build.log
+#
+# El binario resultante queda en ./artifacts/rplayer
+
+version: "3.9"
+
+# â”€â”€ VolÃºmenes compartidos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+volumes:
+  cargo-cache:
+    driver: local
+  registry-cache:
+    driver: local
+
+# â”€â”€ ConfiguraciÃ³n base compartida â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+x-build-common: &build-common
+  working_dir: /workspace
+  volumes:
+    - .:/workspace
+    - ./artifacts:/out
+    - cargo-cache:/usr/local/cargo/registry
+    - registry-cache:/usr/local/cargo/git
+  environment:
+    - RUST_LOG=warn
+    - CARGO_TERM_COLOR=always
+    - CARGO_INCREMENTAL=0
+
+# â”€â”€ Servicios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+services:
+
+  # â”€â”€ Build Fedora (entorno de desarrollo principal) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  build-linux:
+    <<: *build-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder-ubuntu  # Ubuntu tiene mayor compatibilidad de binarios
+    command: >
+      sh -c "
+        set -e &&
+        echo '=== Compilando RPlayer ===' &&
+        cargo build --release &&
+        cp target/release/rplayer /out/rplayer &&
+        echo '=== Build completado: /out/rplayer ===' &&
+        ls -lh /out/rplayer
+      "
+
+  # â”€â”€ Build Ubuntu (compatibilidad mÃ¡xima de glibc) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  build-ubuntu:
+    <<: *build-common
+    image: ubuntu:22.04
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - RUST_LOG=warn
+      - CARGO_TERM_COLOR=always
+    volumes:
+      - .:/workspace
+      - ./artifacts:/out
+      - cargo-cache:/root/.cargo/registry
+    command: >
+      sh -c "
+        apt-get update -qq &&
+        apt-get install -y -qq curl gcc pkg-config libmpv-dev libssl-dev
+          libx11-dev libxcursor-dev libxrandr-dev libxi-dev libgl1-mesa-dev &&
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -q &&
+        . /root/.cargo/env &&
+        cd /workspace &&
+        cargo build --release &&
+        cp target/release/rplayer /out/rplayer-ubuntu
+      "
+
+  # â”€â”€ Lint (clippy + fmt check) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  lint:
+    <<: *build-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: rust-base
+    command: >
+      sh -c "
+        set -e &&
+        echo '=== cargo fmt --check ===' &&
+        cargo fmt --check &&
+        echo '=== cargo clippy ===' &&
+        cargo clippy -- -D warnings &&
+        echo '=== Lint OK ==='
+      "
+
+  # â”€â”€ Check (mÃ¡s rÃ¡pido que build completo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  check:
+    <<: *build-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: rust-base
+    command: cargo check --all
+
+  # â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  test:
+    <<: *build-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: rust-base
+    command: cargo test --all
+
+  # â”€â”€ Shell interactivo (debugging del entorno de build) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  shell:
+    <<: *build-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: rust-base
+    stdin_open: true
+    tty: true
+    command: bash

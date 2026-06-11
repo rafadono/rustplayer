@@ -1,0 +1,212 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RPlayer | Reproductor libre en Rust</title>
+    <meta
+      name="description"
+      content="RPlayer es un reproductor de video y audio libre, hecho en Rust, con foco en rendimiento, control avanzado y privacidad."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./ads.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img src="./assets/icon-rp.png" alt="RPlayer" />
+        <strong>RPlayer</strong>
+      </div>
+      <nav>
+        <a href="#descargas" id="nav-downloads">Descargas</a>
+        <a href="#caracteristicas" id="nav-features">Características</a>
+        <a href="#changelog" id="nav-changelog">Changelog</a>
+        <a href="#soporte" id="nav-support">Soporte</a>
+        <a href="#contacto" id="nav-contact">Contacto</a>
+        <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="tag" id="hero-tag">Hecho en Rust · Linux + Windows · Sin telemetría invasiva</p>
+        <h1 id="hero-title">El reproductor moderno, libre y potente para audio y video</h1>
+        <p class="lead" id="hero-lead">
+          RPlayer nace para ofrecer control total de reproducción, alto rendimiento y una experiencia
+          limpia para usuarios avanzados y usuarios cotidianos.
+        </p>
+        <div class="cta-row">
+          <a class="btn primary" href="#descargas" id="hero-cta-download">Descargar ahora</a>
+          <a class="btn ghost" href="#objetivo" id="hero-cta-about">Conocer el proyecto</a>
+        </div>
+      </section>
+
+      <section id="ads-top" class="ad-block">
+        <h3 id="ads-top-title">Publicidad</h3>
+        <div class="ad-slot" data-ad-slot="1111111111">
+          <span id="ads-top-slot">Espacio para anuncio (728x90)</span>
+          <span id="ads-top-hint">Inserta aquí Google AdSense o red publicitaria compatible.</span>
+        </div>
+      </section>
+
+      <section id="objetivo" class="card">
+        <h2 id="goal-title">Objetivo del proyecto</h2>
+        <p id="goal-text">
+          Construir un reproductor confiable, configurable y de código abierto, capaz de manejar
+          reproducción local, streams, podcast, karaoke, subtítulos y herramientas avanzadas de audio/video,
+          manteniendo seguridad y estabilidad como prioridades.
+        </p>
+      </section>
+
+      <section id="descargas">
+        <h2 id="downloads-title">Descargas</h2>
+        <div class="grid three">
+          <article class="download-card">
+            <h3 id="dl-win-title">Windows</h3>
+            <p id="dl-win-text">Build oficial para Windows x64.</p>
+            <a class="btn primary" id="dl-win-btn" href="https://github.com/TU_ORG/rplayer/releases/latest" target="_blank" rel="noreferrer">Descargar .exe</a>
+          </article>
+          <article class="download-card">
+            <h3 id="dl-linux-title">Linux</h3>
+            <p id="dl-linux-text">Binarios y guía de instalación por distro.</p>
+            <a class="btn primary" id="dl-linux-btn" href="https://github.com/TU_ORG/rplayer/releases/latest" target="_blank" rel="noreferrer">Descargar Linux</a>
+          </article>
+          <article class="download-card">
+            <h3 id="dl-src-title">Código fuente</h3>
+            <p id="dl-src-text">Compila desde fuente y contribuye al proyecto.</p>
+            <a class="btn ghost" id="dl-src-btn" href="https://github.com/TU_ORG/rplayer" target="_blank" rel="noreferrer">Ver en GitHub</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="caracteristicas">
+        <h2 id="features-title">Características destacadas</h2>
+        <div class="grid two">
+          <article class="card">
+            <h3 id="basic-title">Lo básico (que cualquier reproductor debe tener)</h3>
+            <ul>
+              <li id="basic-1">Play/pausa, volumen, mute, seek y atajos de teclado.</li>
+              <li id="basic-2">Soporte para formatos populares de video y audio.</li>
+              <li id="basic-3">Playlist, control de velocidad y pantalla completa.</li>
+              <li id="basic-4">Subtítulos y cambio de pistas de audio.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3 id="pro-title">Lo que diferencia a RPlayer</h3>
+            <ul>
+              <li id="pro-1">Ecualizador paramétrico (PEQ), presets, preamp y anti-clipping.</li>
+              <li id="pro-2">Controles avanzados de imagen: deinterlace, integer scaling y más.</li>
+              <li id="pro-3">Diagnóstico de codecs en runtime y herramientas de troubleshooting.</li>
+              <li id="pro-4">Radio/podcast/streams, historial, marcadores, notas y Up Next.</li>
+              <li id="pro-5">Actualizaciones auto/manual con rollback si algo falla.</li>
+              <li id="pro-6">Proyecto open source hecho en Rust: rendimiento y estabilidad.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="changelog" class="card">
+        <h2 id="changelog-title">Changelog y progreso</h2>
+        <p id="changelog-lead">
+          Resumen del avance del proyecto. Incluye funciones implementadas y hitos reconstruidos cuando no hay fecha exacta registrada.
+        </p>
+        <div class="grid two timeline-wrap">
+          <article class="timeline">
+            <h3 id="implemented-title">Implementado (historial confirmado)</h3>
+            <ul>
+              <li id="impl-1">Integración sólida con libmpv en Windows/Linux y fallback robusto para eventos.</li>
+              <li id="impl-2">UI bilingüe (Español/English) y base de traducciones por keys.</li>
+              <li id="impl-3">Reporte de bugs desde la app con datos técnicos y canal configurable.</li>
+              <li id="impl-4">Actualizaciones auto/manual con rollback automático si la nueva versión falla.</li>
+              <li id="impl-5">Ecualizador paramétrico (PEQ): 6 filtros, presets, preamp y anti-clipping.</li>
+              <li id="impl-6">Diagnóstico de codecs en runtime y panel dedicado.</li>
+              <li id="impl-7">Controles avanzados: integer scaling, subtítulos mejorados y ajustes visuales.</li>
+              <li id="impl-8">Soporte ampliado de streaming: radio, podcasts y utilidades asociadas.</li>
+            </ul>
+          </article>
+          <article class="timeline">
+            <h3 id="reconstructed-title">Hitos reconstruidos (sin fecha exacta)</h3>
+            <ul>
+              <li id="rec-1">Fase inicial: reproducción base + atajos + playlist (MVP usable).</li>
+              <li id="rec-2">Fase media: subtítulos, historial, marcadores, paneles laterales y personalización.</li>
+              <li id="rec-3">Fase avanzada: herramientas pro de audio/video y mayor estabilidad multiplataforma.</li>
+              <li id="rec-4">Fase producto: updates in-app, bug reporting, web oficial y estrategia de monetización.</li>
+              <li id="rec-5">Próxima lógica natural: más telemetría opt-in, métricas de uso y roadmap público por versión.</li>
+            </ul>
+          </article>
+        </div>
+        <p id="changelog-note" class="note">
+          ¿Quieres acelerar estos hitos? Tu apoyo en Patreon impacta directamente el ritmo de desarrollo.
+        </p>
+        <a class="btn patreon" id="changelog-patreon-btn" href="https://patreon.com/TU_USUARIO" target="_blank" rel="noreferrer">Apoyar en Patreon</a>
+      </section>
+
+      <section id="soporte" class="card">
+        <h2 id="support-title">Apoya el proyecto</h2>
+        <p id="support-text">
+          RPlayer se mantiene gracias al tiempo de desarrollo y al apoyo de la comunidad.
+          Si te sirve el proyecto, puedes apoyar su evolución continua.
+        </p>
+        <a class="btn patreon" id="support-btn" href="https://patreon.com/TU_USUARIO" target="_blank" rel="noreferrer">Apoyar en Patreon</a>
+      </section>
+
+      <section id="ads-mid" class="ad-block">
+        <h3 id="ads-mid-title">Publicidad</h3>
+        <div class="ad-slot" data-ad-slot="2222222222">
+          <span id="ads-mid-slot">Espacio para anuncio (300x250)</span>
+          <span id="ads-mid-hint">Recomendado: 1 bloque en mitad de contenido y 1 en footer.</span>
+        </div>
+      </section>
+
+      <section id="contacto" class="card">
+        <h2 id="contact-title">Contacto y bugs</h2>
+        <p id="contact-text-1">
+          Para soporte, reportes de error o propuestas de colaboración:
+          <a href="mailto:contacto@rplayer.app">contacto@rplayer.app</a>
+        </p>
+        <p id="contact-text-2">
+          También puedes abrir issues en
+          <a href="https://github.com/TU_ORG/rplayer/issues" target="_blank" rel="noreferrer">GitHub</a>.
+        </p>
+      </section>
+
+      <section class="card monetization">
+        <h2 id="monet-title">Monetización y transparencia</h2>
+        <p id="monet-text">
+          Esta web puede mostrar publicidad para financiar mantenimiento y nuevas funciones.
+          Se recomienda incluir política de privacidad/cookies y aviso de terceros (AdSense u otra red).
+        </p>
+        <a class="btn ghost" id="monet-btn" href="#ads-top">Ver zonas de anuncios</a>
+      </section>
+    </main>
+
+    <section id="ads-footer" class="ad-block ad-container">
+      <h3>Publicidad</h3>
+      <div class="ad-slot" data-ad-slot="3333333333">
+        <span>Espacio para anuncio (responsive)</span>
+        <span>Bloque inferior para monetización no invasiva.</span>
+      </div>
+    </section>
+
+    <footer>
+      <p id="footer-text">© <span id="year"></span> RPlayer. Hecho con Rust, egui y libmpv.</p>
+      <p>
+        <a href="https://github.com/TU_ORG/rplayer" target="_blank" rel="noreferrer">GitHub</a>
+        ·
+        <a href="https://patreon.com/TU_USUARIO" target="_blank" rel="noreferrer">Patreon</a>
+        ·
+        <a href="./privacy.html">Privacidad</a>
+        ·
+        <a href="./terms.html">Términos</a>
+      </p>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

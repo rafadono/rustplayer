@@ -1,0 +1,29 @@
+{
+    "recommendations": [
+        // ── Rust ──────────────────────────────────────────────────────────
+        "rust-lang.rust-analyzer",          // Análisis, completado, refactor
+        "vadimcn.vscode-lldb",              // Debugger LLDB (Linux/Mac)
+        "ms-vscode.cpptools",               // Debugger MSVC (Windows)
+
+        // ── TOML (Cargo.toml) ─────────────────────────────────────────────
+        "tamasfe.even-better-toml",         // Sintaxis y validación de TOML
+        "serayuzgur.crates",                // Versiones de crates en Cargo.toml
+
+        // ── Git ───────────────────────────────────────────────────────────
+        "eamodio.gitlens",                  // Git blame, historial, etc.
+        "mhutchie.git-graph",              // Gráfico visual de ramas
+
+        // ── Calidad de código ─────────────────────────────────────────────
+        "usernamehw.errorlens",             // Errores inline en el editor
+        "streetsidesoftware.code-spell-checker", // Corrector ortográfico
+
+        // ── Markdown ──────────────────────────────────────────────────────
+        "yzhang.markdown-all-in-one",      // Preview, tabla de contenidos
+        "esbenp.prettier-vscode",           // Formateo de Markdown
+
+        // ── Utilidades ────────────────────────────────────────────────────
+        "vscodevim.vim",                    // Opcional: bindings de Vim
+        "PKief.material-icon-theme"         // Íconos de archivos
+    ],
+    "unwantedRecommendations": []
+}
