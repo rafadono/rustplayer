@@ -68,3 +68,7 @@ lcov.info
 .AppleDouble
 .LSOverride
 ._*
+
+# ── CodeGraph ─────────────────────────────────────────────────────────────────
+.codegraph/*
+!.codegraph/.gitignore
