@@ -15,36 +15,8 @@
     clippy::needless_return
 )]
 
-mod ab_repeat;
-mod app;
-mod bookmarks;
-mod chapters;
-mod config;
-mod converter;
-mod donation;
-mod equalizer;
-mod history;
-mod i18n;
-mod image_controls;
-mod karaoke;
-mod lastfm;
-mod media_info;
-mod notes;
-mod opensubtitles;
-mod player;
-mod playlist;
-mod remote;
-mod renderer;
-mod sleep_timer;
-mod streaming;
-mod theme_manager;
-mod thumbnail;
-mod trim;
-mod ui;
-mod up_next;
-mod updater;
-
 use eframe::egui;
+use rplayer::app::PlayerApp;
 use std::sync::Arc;
 
 fn main() -> eframe::Result<()> {
@@ -70,6 +42,6 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "RPlayer",
         options,
-        Box::new(|cc| Box::new(app::PlayerApp::new(cc))),
+        Box::new(|cc| Box::new(PlayerApp::new(cc))),
     )
 }
