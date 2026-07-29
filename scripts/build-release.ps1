@@ -15,7 +15,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$Binary   = "rustplayer.exe"
+$Binary   = "rplayer.exe"
 $Version  = (Select-String -Path "Cargo.toml" -Pattern '^version\s*=\s*"(.*)"').Matches[0].Groups[1].Value
 $TargetDir = "target\release"
 $ArtifactsDir = "artifacts"

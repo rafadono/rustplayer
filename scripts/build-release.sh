@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-BINARY="rustplayer"
+BINARY="rplayer"
 VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
 TARGET_DIR="target/release"
 ARTIFACTS_DIR="artifacts"
@@ -94,49 +94,113 @@ if [[ $LEAKED -eq 0 ]]; then
     echo "  ✓ Sin strings sensibles visibles."
 fi
 
-# ── Package (optional) ────────────────────────── ───────────────────────────
-if [[ "${1:-}" == "--package" ]]; then
-    mkdir -p "${ARTIFACTS_DIR}"
-
-    TARBALL="${ARTIFACTS_DIR}/${BINARY}-${VERSION}-linux-x86_64.tar.gz"
-    tar -czf "${TARBALL}" \
-        -C "${TARGET_DIR}" "${BINARY}" \
-        -C "$(pwd)" README.md LICENSE docs/
-
-    echo ""
-    echo "✓ Paquete: ${TARBALL} ($(du -sh "${TARBALL}" | cut -f1))"
-
-    # basic .deb if dpkg-deb is available
-    if command -v dpkg-deb &>/dev/null; then
-        build_deb "${VERSION}"
-    fi
-fi
-
-echo ""
-echo "=== Build completado ==="
-
 # ── Function to generate .deb ──────────────────────── ─────────────────────────
 build_deb() {
     local ver="$1"
     local deb_dir="${ARTIFACTS_DIR}/deb/${BINARY}_${ver}_amd64"
 
     mkdir -p "${deb_dir}/usr/bin"
+    mkdir -p "${deb_dir}/usr/share/applications"
+    mkdir -p "${deb_dir}/usr/share/icons/hicolor/256x256/apps"
     mkdir -p "${deb_dir}/usr/share/doc/${BINARY}"
     mkdir -p "${deb_dir}/DEBIAN"
 
     cp "${TARGET_DIR}/${BINARY}" "${deb_dir}/usr/bin/"
+    cp installer/linux/rplayer.desktop "${deb_dir}/usr/share/applications/"
+    cp assets/icon-rp.png "${deb_dir}/usr/share/icons/hicolor/256x256/apps/rplayer.png"
     cp README.md LICENSE "${deb_dir}/usr/share/doc/${BINARY}/"
 
     cat > "${deb_dir}/DEBIAN/control" << EOF
-Package: rustplayer
+Package: rplayer
 Version: ${ver}
 Architecture: amd64
 Maintainer: RustPlayer
 Description: Reproductor de video y audio libre
  Reproductor basado en libmpv con interfaz gráfica egui.
-Depends: libmpv1 | mpv, ffmpeg
+Depends: libmpv-dev | libmpv2 | libmpv1 | mpv, ffmpeg
 EOF
 
     dpkg-deb --build "${deb_dir}" "${ARTIFACTS_DIR}/${BINARY}_${ver}_amd64.deb" 2>/dev/null
     echo "✓ .deb: ${ARTIFACTS_DIR}/${BINARY}_${ver}_amd64.deb"
 }
+
+# ── Function to generate .rpm ──────────────────────── ─────────────────────────
+build_rpm() {
+    local ver="$(echo "$1" | tr '-' '_')"
+    local rpm_root="${ARTIFACTS_DIR}/rpmbuild"
+
+    mkdir -p "${rpm_root}"/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+    cat > "${rpm_root}/SPECS/rplayer.spec" << EOF
+Name:           rplayer
+Version:        ${ver}
+Release:        1%{?dist}
+Summary:        Reproductor de video y audio libre
+License:        MIT
+URL:            https://github.com/rustplayer/rustplayer
+Requires:       mpv-libs, ffmpeg
+
+%description
+Reproductor de video y audio libre desarrollado en Rust, egui y libmpv.
+
+%install
+mkdir -p %{buildroot}/usr/bin
+mkdir -p %{buildroot}/usr/share/applications
+mkdir -p %{buildroot}/usr/share/icons/hicolor/256x256/apps
+
+install -m 0755 $(pwd)/${TARGET_DIR}/${BINARY} %{buildroot}/usr/bin/rplayer
+install -m 0644 $(pwd)/installer/linux/rplayer.desktop %{buildroot}/usr/share/applications/rplayer.desktop
+install -m 0644 $(pwd)/assets/icon-rp.png %{buildroot}/usr/share/icons/hicolor/256x256/apps/rplayer.png
+
+%files
+/usr/bin/rplayer
+/usr/share/applications/rplayer.desktop
+/usr/share/icons/hicolor/256x256/apps/rplayer.png
+
+EOF
+
+    rpmbuild --define "_topdir $(pwd)/${rpm_root}" -bb "${rpm_root}/SPECS/rplayer.spec" &>/dev/null || true
+    local generated_rpm=$(find "${rpm_root}/RPMS" -name "*.rpm" 2>/dev/null | head -n 1)
+    if [[ -n "${generated_rpm}" ]]; then
+        cp "${generated_rpm}" "${ARTIFACTS_DIR}/"
+        echo "✓ .rpm: ${ARTIFACTS_DIR}/$(basename "${generated_rpm}")"
+    fi
+    rm -rf "${rpm_root}"
+}
+
+# ── Package (optional) ────────────────────────── ───────────────────────────
+if [[ "${1:-}" == "--package" ]]; then
+    mkdir -p "${ARTIFACTS_DIR}"
+
+    PKG_STAGING="${ARTIFACTS_DIR}/rplayer-${VERSION}-linux-x86_64"
+    rm -rf "${PKG_STAGING}"
+    mkdir -p "${PKG_STAGING}/assets"
+
+    cp "${TARGET_DIR}/${BINARY}" "${PKG_STAGING}/"
+    cp installer/linux/install.sh "${PKG_STAGING}/"
+    cp installer/linux/rplayer.desktop "${PKG_STAGING}/"
+    cp assets/icon-rp.png "${PKG_STAGING}/assets/"
+    cp README.md LICENSE "${PKG_STAGING}/"
+    cp -r docs "${PKG_STAGING}/"
+    chmod +x "${PKG_STAGING}/install.sh" "${PKG_STAGING}/${BINARY}"
+
+    TARBALL="${ARTIFACTS_DIR}/${BINARY}-${VERSION}-linux-x86_64.tar.gz"
+    tar -czf "${TARBALL}" -C "${ARTIFACTS_DIR}" "rplayer-${VERSION}-linux-x86_64"
+    rm -rf "${PKG_STAGING}"
+
+    echo ""
+    echo "✓ Paquete generado: ${TARBALL} ($(du -sh "${TARBALL}" | cut -f1))"
+
+    # basic .deb if dpkg-deb is available
+    if command -v dpkg-deb &>/dev/null; then
+        build_deb "${VERSION}"
+    fi
+
+    # basic .rpm if rpmbuild is available
+    if command -v rpmbuild &>/dev/null; then
+        build_rpm "${VERSION}"
+    fi
+fi
+
+echo ""
+echo "=== Build completado ==="

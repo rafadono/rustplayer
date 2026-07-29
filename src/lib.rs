@@ -1,44 +1,16 @@
-#![allow(
-    dead_code,
-    clippy::too_many_arguments,
-    clippy::new_without_default,
-    clippy::ptr_arg,
-    clippy::collapsible_if,
-    clippy::field_reassign_with_default,
-    clippy::derivable_impls,
-    clippy::needless_lifetimes,
-    clippy::manual_ignore_case_cmp,
-    clippy::manual_clamp,
-    clippy::manual_split_once,
-    clippy::map_identity,
-    clippy::needless_return
-)]
+//! RPlayer library crate exposing domain modules.
 
-pub mod ab_repeat;
-pub mod app;
-pub mod bookmarks;
-pub mod chapters;
-pub mod config;
-pub mod converter;
-pub mod donation;
-pub mod equalizer;
-pub mod history;
-pub mod i18n;
-pub mod image_controls;
-pub mod karaoke;
-pub mod lastfm;
-pub mod media_info;
-pub mod notes;
-pub mod opensubtitles;
-pub mod player;
-pub mod playlist;
-pub mod remote;
-pub mod renderer;
-pub mod sleep_timer;
-pub mod streaming;
-pub mod theme_manager;
-pub mod thumbnail;
-pub mod trim;
-pub mod ui;
-pub mod up_next;
-pub mod updater;
+pub mod playback;
+pub mod services;
+pub mod storage;
+pub mod theme;
+pub mod tools;
+
+// Explicit re-exports for root-level module access without glob ambiguity
+pub use playback::{
+    ab_repeat, chapters, equalizer, image_controls, karaoke, player, sleep_timer, up_next,
+};
+pub use services::{lastfm, opensubtitles, remote, streaming, updater};
+pub use storage::{bookmarks, config, history, notes, playlist};
+pub use theme::{i18n, theme_manager};
+pub use tools::{converter, media_info, thumbnail, trim};

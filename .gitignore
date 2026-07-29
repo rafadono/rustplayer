@@ -16,6 +16,8 @@
 
 # ── App temporary files ───────────────────────────────────────────────────────
 /tmp/rustplayer_thumbs/
+/ejemplo video/
+"ejemplo video/"
 
 # ── Local configuration (contains API keys) ───────────────────────────────────
 # DO NOT commit: may contain real keys if the dev put them in code

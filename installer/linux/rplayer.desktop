@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=RPlayer
+Comment=Reproductor de video y audio libre (Rust + egui + libmpv)
+Exec=rplayer %U
+Icon=rplayer
+Terminal=false
+Type=Application
+Categories=AudioVideo;Player;Video;Audio;
+MimeType=video/mp4;video/x-matroska;video/webm;audio/mpeg;audio/flac;audio/ogg;

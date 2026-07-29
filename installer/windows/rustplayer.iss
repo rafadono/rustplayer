@@ -8,10 +8,10 @@
 ;   installer\windows\output\RustPlayerSetup.exe
 
 #define AppName      "RustPlayer"
-#define AppVersion   "0.4.0"
+#define AppVersion   "0.5.0-alpha"
 #define AppPublisher "RustPlayer"
 #define AppURL       "https://github.com/TU_USUARIO/rustplayer"
-#define AppExeName   "rustplayer.exe"
+#define AppExeName   "rplayer.exe"
 #define AppIcon      "assets\icon.ico"
 
 [Setup]
