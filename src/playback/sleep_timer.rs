@@ -27,6 +27,12 @@ pub struct SleepTimer {
     pub fired: bool,
 }
 
+impl Default for SleepTimer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SleepTimer {
     pub fn new() -> Self {
         Self {

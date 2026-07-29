@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use crate::components::TrackItem;
+use dioxus::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum AudioTab {
@@ -38,8 +38,19 @@ pub fn AudioModal(
         (AudioTab::Karaoke, "🎤 Karaoke & Tono"),
     ];
 
-    let band_labels = ["60Hz", "170Hz", "310Hz", "600Hz", "1kHz", "3kHz", "6kHz", "12kHz", "14kHz", "16kHz"];
-    let presets = ["Flat", "Bass Boost", "Treble Boost", "Vocal", "Rock", "Pop", "Classical", "Jazz"];
+    let band_labels = [
+        "60Hz", "170Hz", "310Hz", "600Hz", "1kHz", "3kHz", "6kHz", "12kHz", "14kHz", "16kHz",
+    ];
+    let presets = [
+        "Flat",
+        "Bass Boost",
+        "Treble Boost",
+        "Vocal",
+        "Rock",
+        "Pop",
+        "Classical",
+        "Jazz",
+    ];
 
     rsx! {
         div { class: "modal-overlay", onclick: move |_| on_close.call(()),

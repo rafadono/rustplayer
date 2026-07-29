@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use crate::components::TrackItem;
+use dioxus::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum VideoTab {

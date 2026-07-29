@@ -26,12 +26,20 @@ pub fn PlayerControls(
         let h = s / 3600;
         let m = (s % 3600) / 60;
         let sec = s % 60;
-        if h > 0 { format!("{:02}:{:02}:{:02}", h, m, sec) } else { format!("{:02}:{:02}", m, sec) }
+        if h > 0 {
+            format!("{:02}:{:02}:{:02}", h, m, sec)
+        } else {
+            format!("{:02}:{:02}", m, sec)
+        }
     };
 
     let pos_str = format_time(time_pos);
     let dur_str = format_time(duration);
-    let seek_val = if duration > 0.0 { (time_pos / duration) * 100.0 } else { 0.0 };
+    let seek_val = if duration > 0.0 {
+        (time_pos / duration) * 100.0
+    } else {
+        0.0
+    };
 
     let speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
 

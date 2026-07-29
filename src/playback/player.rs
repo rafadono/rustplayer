@@ -420,10 +420,10 @@ impl Player {
         self.mpv.set_property("wid", wid)
     }
 
-    pub fn open(&self, path: &PathBuf) -> Result<(), libmpv2::Error> {
+    pub fn open(&self, path: &std::path::Path) -> Result<(), libmpv2::Error> {
         let s = path.to_string_lossy();
         self.mpv.command("loadfile", &[s.as_ref()])?;
-        self.state.lock().unwrap().current_file = Some(path.clone());
+        self.state.lock().unwrap().current_file = Some(path.to_path_buf());
         Ok(())
     }
 

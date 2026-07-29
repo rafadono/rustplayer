@@ -1,16 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub enum Language {
+    #[default]
     Es,
     En,
-}
-
-impl Default for Language {
-    fn default() -> Self {
-        Self::Es
-    }
 }
 
 impl Language {
@@ -22,7 +16,7 @@ impl Language {
     }
 }
 
-pub fn tr<'a>(lang: Language, key: &'a str) -> &'a str {
+pub fn tr(lang: Language, key: &str) -> &str {
     match lang {
         Language::Es => match key {
             "menu.file" => "Archivo",

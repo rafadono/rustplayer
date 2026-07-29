@@ -101,7 +101,7 @@ impl Playlist {
             }
             if let Some(rest) = line.strip_prefix("#EXTINF:") {
                 // #EXTINF: duration, Artist - Title
-                title_hint = rest.splitn(2, ',').nth(1).map(|t| t.to_string());
+                title_hint = rest.split_once(',').map(|x| x.1.to_string());
             } else if !line.starts_with('#') {
                 if line.starts_with("http://") || line.starts_with("https://") {
                     self.add_url(line.to_string(), title_hint.take());

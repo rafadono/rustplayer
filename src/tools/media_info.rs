@@ -1,5 +1,7 @@
 //! media_info.rs — Extract metadata from the file via libmpv.
 
+#![allow(clippy::field_reassign_with_default)]
+
 use serde::Deserialize;
 
 #[derive(Debug, Clone, Default)]

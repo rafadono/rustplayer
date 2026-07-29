@@ -63,10 +63,7 @@ fn handle(req: tiny_http::Request, tx: &Sender<RemoteCommand>) {
     debug!("remote: {} {}", method, url);
 
     // Parse path and query
-    let (path, query) = url
-        .split_once('?')
-        .map(|(p, q)| (p, q))
-        .unwrap_or((&url, ""));
+    let (path, query) = url.split_once('?').unwrap_or((&url, ""));
 
     let resp = match (method.as_str(), path) {
         ("GET", "/") => respond_html(HTML_PAGE),

@@ -2,15 +2,15 @@
 
 mod components;
 
-use dioxus::prelude::*;
+use components::*;
 use dioxus::desktop::{Config, LogicalSize, WindowBuilder};
-use rplayer::player::Player;
-use rplayer::image_controls::ImageControls;
-use rplayer::equalizer::Equalizer;
+use dioxus::prelude::*;
 use rplayer::bookmarks::Bookmark;
+use rplayer::equalizer::Equalizer;
+use rplayer::image_controls::ImageControls;
+use rplayer::player::Player;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use components::*;
 
 fn main() {
     std::env::set_var("LC_NUMERIC", "C");
@@ -28,7 +28,7 @@ fn main() {
             WindowBuilder::new()
                 .with_title("RPlayer")
                 .with_inner_size(LogicalSize::new(1140.0, 720.0))
-                .with_min_inner_size(LogicalSize::new(600.0, 400.0))
+                .with_min_inner_size(LogicalSize::new(600.0, 400.0)),
         );
 
     LaunchBuilder::desktop().with_cfg(cfg).launch(App);
@@ -91,7 +91,10 @@ fn App() -> Element {
 
     // File Open Helper
     let do_load_file = move |path: PathBuf| {
-        let title = path.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
+        let title = path
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_default();
         current_title.set(title);
         has_file.set(true);
         playing.set(true);
@@ -104,7 +107,9 @@ fn App() -> Element {
 
             let gtk_win = window.gtk_window();
             if let Some(gdk_win) = gtk_win.window() {
-                let wid = if let Ok(x11_win) = glib::object::Cast::downcast::<gdkx11::X11Window>(gdk_win.clone()) {
+                let wid = if let Ok(x11_win) =
+                    glib::object::Cast::downcast::<gdkx11::X11Window>(gdk_win.clone())
+                {
                     x11_win.xid() as i64
                 } else {
                     gdk_win.as_ptr() as i64
@@ -134,8 +139,11 @@ fn App() -> Element {
     let mut open_file_fn = do_load_file.clone();
     let open_file_dialog = move |_| {
         if let Some(path) = rfd::FileDialog::new()
-            .add_filter("Video & Audio", &["mp4", "mkv", "avi", "webm", "mp3", "flac", "ogg", "wav"])
-            .pick_file() 
+            .add_filter(
+                "Video & Audio",
+                &["mp4", "mkv", "avi", "webm", "mp3", "flac", "ogg", "wav"],
+            )
+            .pick_file()
         {
             open_file_fn(path);
         }

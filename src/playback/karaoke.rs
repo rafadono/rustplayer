@@ -36,7 +36,7 @@ pub fn list_cdg_files(dir: &Path) -> Vec<PathBuf> {
         .map(|e| e.path())
         .filter(|p| {
             p.extension()
-                .map(|e| e.to_ascii_lowercase() == "cdg")
+                .map(|e| e.eq_ignore_ascii_case("cdg"))
                 .unwrap_or(false)
         })
         .collect()

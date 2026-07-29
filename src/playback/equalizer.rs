@@ -1,5 +1,7 @@
 //! equalizer.rs - PEQ v1 professional.
 
+#![allow(clippy::field_reassign_with_default)]
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

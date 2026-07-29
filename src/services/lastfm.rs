@@ -175,6 +175,12 @@ pub struct ScrobbleTracker {
     pub now_playing_sent: bool,
 }
 
+impl Default for ScrobbleTracker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ScrobbleTracker {
     pub fn new() -> Self {
         Self {
@@ -208,7 +214,7 @@ impl ScrobbleTracker {
         }
 
         let threshold = if duration > 0.0 {
-            (duration * 0.5).min(240.0).max(MIN_SCROBBLE_SECS)
+            (duration * 0.5).clamp(MIN_SCROBBLE_SECS, 240.0)
         } else {
             MIN_SCROBBLE_SECS
         };

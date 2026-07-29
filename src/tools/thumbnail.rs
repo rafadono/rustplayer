@@ -23,6 +23,12 @@ pub struct ThumbnailCache {
     pub ready: bool,
 }
 
+impl Default for ThumbnailCache {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ThumbnailCache {
     pub fn new() -> Self {
         Self {
