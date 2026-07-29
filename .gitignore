@@ -22,8 +22,8 @@
 # ── Local configuration (contains API keys) ───────────────────────────────────
 # DO NOT commit: may contain real keys if the dev put them in code
 # Better to use environment variables in production
-# src/lastfm.rs        ← do not ignore, but do not commit with real keys
-# src/opensubtitles.rs ← ditto
+# src/services/lastfm.rs        ← do not ignore, but do not commit with real keys
+# src/services/opensubtitles.rs ← ditto
 
 # ── IDEs and editors ──────────────────────────────────────────────────────────
 .idea/
@@ -72,5 +72,4 @@ lcov.info
 ._*
 
 # ── CodeGraph ─────────────────────────────────────────────────────────────────
-.codegraph/*
-!.codegraph/.gitignore
+.codegraph/
