@@ -117,6 +117,18 @@ impl ThumbnailCache {
             .map(|th| th.path.clone())
     }
 
+    /// Returns the thumbnail closest to time `t` as a `data:` URI, ready to
+    /// use directly as an `<img src>`. The webview's `file://` loader blocks
+    /// arbitrary local paths (confirmed via a manual render spike), so
+    /// thumbnails are inlined as base64 instead of referenced by path.
+    pub fn nearest_data_uri(&self, t: f64) -> Option<String> {
+        let path = self.nearest(t)?;
+        let bytes = std::fs::read(path).ok()?;
+        use base64::Engine;
+        let encoded = base64::engine::general_purpose::STANDARD.encode(bytes);
+        Some(format!("data:image/png;base64,{encoded}"))
+    }
+
     pub fn is_ready(&self) -> bool {
         !self.thumbs.lock().unwrap().is_empty()
     }

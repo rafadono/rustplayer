@@ -1,0 +1,22 @@
+# Without this file, `docker build` sends the whole working tree (including
+# target/, which accumulates gigabytes of native build artifacts) as build
+# context on every invocation, making builds extremely slow.
+
+target/
+.git/
+vendor/
+artifacts/
+.codegraph/
+website/
+*.tar.gz
+*.tar.xz
+*.zip
+*.deb
+*.rpm
+*.pdb
+*.ilk
+*.exp
+*.lib
+.idea/
+.vscode/
+*.log

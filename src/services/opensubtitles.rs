@@ -33,7 +33,7 @@ fn base_url() -> String {
     obfstr::obfstr!("https://api.opensubtitles.com/api/v1").to_string()
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SubResult {
     pub language: String,
     pub title: String,

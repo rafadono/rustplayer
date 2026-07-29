@@ -15,18 +15,26 @@ Record the songs you listen to on your Last.fm profile.
    - Application name: `RPlayer` (or whatever name you want)
    - Application description: any text
 3. Copy the **API key** and the **Shared secret**
-4. Edit `src/lastfm.rs`:
+4. Set the environment variables before building, so the keys get baked into
+   the binary (obfuscated with `obfstr`, see [src/services/lastfm.rs](../src/services/lastfm.rs)):
 
-```rust
-const API_KEY:    &str = "your_api_key_here";
-const API_SECRET: &str = "your_shared_secret_here";
+```bash
+# Linux / macOS
+export RUSTPLAYER_LASTFM_KEY="your_api_key_here"
+export RUSTPLAYER_LASTFM_SECRET="your_shared_secret_here"
+cargo build --release
 ```
 
-5. Recompile: `cargo build --release`
+```powershell
+# Windows PowerShell
+$env:RUSTPLAYER_LASTFM_KEY="your_api_key_here"
+$env:RUSTPLAYER_LASTFM_SECRET="your_shared_secret_here"
+cargo build --release
+```
 
-6. In RPlayer: View → Settings → Last.fm section
-   - Enter username and password
-   - Click "Authenticate"
+5. In RPlayer: open the Audio panel → Tracks tab → Last.fm section
+   - Enter your username and password
+   - Click "Connect Account"
 
 ### What is recorded
 
@@ -49,28 +57,23 @@ Search and download subtitles directly from OpenSubtitles.org.
 1. Create a free account at https://www.opensubtitles.com/en/consumers
 2. Go to https://www.opensubtitles.com/en/consumers → "API"
 3. Copy the **Consumer API key**
-4. Edit `src/opensubtitles.rs`:
+4. Set the environment variable before building (see
+   [src/services/opensubtitles.rs](../src/services/opensubtitles.rs)):
 
-```rust
-const API_KEY: &str = "your_api_key_here";
+```bash
+# Linux / macOS
+export RUSTPLAYER_OPENSUBS_KEY="your_api_key_here"
+cargo build --release
 ```
 
-5. Recompile: `cargo build --release`
+```powershell
+# Windows PowerShell
+$env:RUSTPLAYER_OPENSUBS_KEY="your_api_key_here"
+cargo build --release
+```
 
 ### Use in RPlayer
 
-View → "Download subtitles" → write the title → select language → Search → select result → download.
+Open the Video panel → Subtitles tab → type the title → Search → pick a result → Download.
 
-The subtitle is saved in the same directory as the video file and loaded automatically.
-
----
-
-## Donations (Patreon)
-
-If you want to add a donation banner to your player distribution, edit `src/donation.rs`:
-
-```rust
-const PATREON_URL: &str = "https://patreon.com/your_username";
-```
-
-The banner appears at the bottom of the window and can be closed permanently.
+The subtitle is saved next to the video file and loaded automatically.

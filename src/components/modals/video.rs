@@ -1,5 +1,7 @@
 use crate::components::TrackItem;
 use dioxus::prelude::*;
+use rplayer::i18n::{tr, Language};
+use rplayer::opensubtitles::SubResult;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum VideoTab {
@@ -21,6 +23,9 @@ pub fn VideoModal(
     on_change_sub_delay: EventHandler<f64>,
     opensubtitles_query: String,
     on_search_opensubtitles: EventHandler<String>,
+    sub_search_status: String,
+    sub_search_results: Vec<SubResult>,
+    on_download_sub: EventHandler<SubResult>,
     // Image Controls Props
     brightness: i64,
     contrast: i64,
@@ -34,9 +39,10 @@ pub fn VideoModal(
     on_change_gamma: EventHandler<i64>,
     on_reset_image: EventHandler<()>,
 ) -> Element {
+    let language = use_context::<Signal<Language>>();
     let tabs = [
-        (VideoTab::Subtitles, "💬 Subtítulos & OpenSubtitles"),
-        (VideoTab::Image, "🎨 Ajustes de Imagen"),
+        (VideoTab::Subtitles, "video_modal.tab_subtitles"),
+        (VideoTab::Image, "video_modal.tab_image"),
     ];
 
     let mut search_term = use_signal(|| opensubtitles_query.clone());
@@ -45,22 +51,22 @@ pub fn VideoModal(
         div { class: "modal-overlay", onclick: move |_| on_close.call(()),
             div { class: "modal-card-large", onclick: move |e| e.stop_propagation(),
                 div { class: "modal-header",
-                    h3 { "🎬 Centro de Video y Subtítulos" }
+                    h3 { "{tr(language(), \"video_modal.title\")}" }
                     button { class: "btn-icon", onclick: move |_| on_close.call(()), "✕" }
                 }
 
                 div { class: "modal-layout-tabbed",
                     nav { class: "modal-sidebar-tabs",
-                        for (tab, label) in tabs {
+                        for (tab, label_key) in tabs {
                             {
                                 let is_active = active_tab == tab;
                                 let class_name = if is_active { "tab-button active" } else { "tab-button" };
                                 rsx! {
                                     button {
-                                        key: "{label}",
+                                        key: "{label_key}",
                                         class: "{class_name}",
                                         onclick: move |_| on_change_tab.call(tab),
-                                        "{label}"
+                                        "{tr(language(), label_key)}"
                                     }
                                 }
                             }
@@ -70,31 +76,31 @@ pub fn VideoModal(
                     main { class: "modal-tab-content",
                         match active_tab {
                             VideoTab::Subtitles => rsx! {
-                                h4 { class: "section-title", "Pistas de Subtítulos Integradas" }
+                                h4 { class: "section-title", "{tr(language(), \"video_modal.embedded_tracks_title\")}" }
                                 div { class: "tracks-list",
-                                    for tr in sub_tracks {
+                                    for track in sub_tracks {
                                         {
-                                            let is_sel = current_sub == Some(tr.id);
+                                            let is_sel = current_sub == Some(track.id);
                                             let class_name = if is_sel { "track-item active" } else { "track-item" };
-                                            let tr_id = tr.id;
+                                            let track_id = track.id;
                                             rsx! {
                                                 div {
-                                                    key: "{tr.id}",
+                                                    key: "{track.id}",
                                                     class: "{class_name}",
-                                                    onclick: move |_| on_select_sub.call(tr_id),
-                                                    span { "{tr.title}" }
-                                                    span { class: "eq-val-label", "{tr.lang}" }
+                                                    onclick: move |_| on_select_sub.call(track_id),
+                                                    span { "{track.title}" }
+                                                    span { class: "eq-val-label", "{track.lang}" }
                                                 }
                                             }
                                         }
                                     }
                                 }
                                 div { style: "display: flex; gap: 12px; align-items: center; margin-bottom: 16px;",
-                                    button { class: "btn-primary", onclick: move |_| on_load_external_sub.call(()), "📁 Cargar Archivo (.srt / .vtt)" }
+                                    button { class: "btn-primary", onclick: move |_| on_load_external_sub.call(()), "{tr(language(), \"video_modal.load_external_sub\")}" }
                                 }
                                 div { class: "slider-row", style: "margin-bottom: 24px;",
                                     div { style: "display: flex; justify-content: space-between;",
-                                        span { "Desfase de Subtítulos" }
+                                        span { "{tr(language(), \"video_modal.sub_delay_label\")}" }
                                         span { class: "eq-val-label", "{sub_delay:+.1}s" }
                                     }
                                     input {
@@ -108,24 +114,43 @@ pub fn VideoModal(
                                     }
                                 }
 
-                                h4 { class: "section-title", "📜 Buscar Subtítulos en OpenSubtitles" }
+                                h4 { class: "section-title", "{tr(language(), \"video_modal.opensubtitles_section_title\")}" }
                                 div { style: "display: flex; gap: 8px; margin-top: 8px;",
                                     input {
                                         class: "select-input",
                                         style: "flex: 1;",
                                         r#type: "text",
-                                        placeholder: "Nombre de película o serie...",
+                                        placeholder: "{tr(language(), \"video_modal.search_placeholder\")}",
                                         value: "{search_term}",
                                         oninput: move |e| search_term.set(e.value())
                                     }
-                                    button { class: "btn-primary", onclick: move |_| on_search_opensubtitles.call(search_term()), "🔍 Buscar" }
+                                    button { class: "btn-primary", onclick: move |_| on_search_opensubtitles.call(search_term()), "{tr(language(), \"video_modal.search_button\")}" }
+                                }
+                                if !sub_search_status.is_empty() {
+                                    p { style: "font-size: 12px; color: var(--text-muted); margin-top: 8px;", "{sub_search_status}" }
+                                }
+                                div { class: "tracks-list", style: "margin-top: 8px;",
+                                    for r in sub_search_results {
+                                        {
+                                            let result = r.clone();
+                                            rsx! {
+                                                div { key: "{r.file_id}", class: "track-item",
+                                                    div { style: "display: flex; flex-direction: column;",
+                                                        span { "{r.title}" }
+                                                        span { class: "eq-val-label", "{r.language} · {r.release}" }
+                                                    }
+                                                    button { class: "btn-icon", onclick: move |_| on_download_sub.call(result.clone()), "{tr(language(), \"video_modal.download_button\")}" }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             VideoTab::Image => rsx! {
                                 div { class: "control-group-col",
                                     div { class: "slider-row",
                                         div { style: "display: flex; justify-content: space-between;",
-                                            span { "Brillo" }
+                                            span { "{tr(language(), \"video_modal.brightness_label\")}" }
                                             span { class: "eq-val-label", "{brightness}" }
                                         }
                                         input {
@@ -136,7 +161,7 @@ pub fn VideoModal(
 
                                     div { class: "slider-row",
                                         div { style: "display: flex; justify-content: space-between;",
-                                            span { "Contraste" }
+                                            span { "{tr(language(), \"video_modal.contrast_label\")}" }
                                             span { class: "eq-val-label", "{contrast}" }
                                         }
                                         input {
@@ -147,7 +172,7 @@ pub fn VideoModal(
 
                                     div { class: "slider-row",
                                         div { style: "display: flex; justify-content: space-between;",
-                                            span { "Saturación" }
+                                            span { "{tr(language(), \"video_modal.saturation_label\")}" }
                                             span { class: "eq-val-label", "{saturation}" }
                                         }
                                         input {
@@ -158,7 +183,7 @@ pub fn VideoModal(
 
                                     div { class: "slider-row",
                                         div { style: "display: flex; justify-content: space-between;",
-                                            span { "Tono (Hue)" }
+                                            span { "{tr(language(), \"video_modal.hue_label\")}" }
                                             span { class: "eq-val-label", "{hue}" }
                                         }
                                         input {
@@ -169,7 +194,7 @@ pub fn VideoModal(
 
                                     div { class: "slider-row",
                                         div { style: "display: flex; justify-content: space-between;",
-                                            span { "Gamma" }
+                                            span { "{tr(language(), \"video_modal.gamma_label\")}" }
                                             span { class: "eq-val-label", "{gamma}" }
                                         }
                                         input {
@@ -181,7 +206,7 @@ pub fn VideoModal(
                                     div { style: "margin-top: 12px;",
                                         button { class: "btn-primary", style: "background: var(--bg-surface-hover); color: var(--text-main); border: 1px solid var(--border-color);",
                                             onclick: move |_| on_reset_image.call(()),
-                                            "🔄 Restablecer Valores por Defecto"
+                                            "{tr(language(), \"video_modal.reset_defaults\")}"
                                         }
                                     }
                                 }

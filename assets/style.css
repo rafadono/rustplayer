@@ -56,10 +56,12 @@ body, html {
   align-items: center;
   justify-content: space-between;
   height: 48px;
+  max-width: 100%;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-color);
   padding: 0 16px;
   z-index: 10;
+  overflow: hidden;
 }
 
 .header-title {
@@ -69,12 +71,20 @@ body, html {
   align-items: center;
   gap: 8px;
   color: var(--text-main);
+  flex-shrink: 0;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.header-actions::-webkit-scrollbar {
+  display: none;
 }
 
 .btn-icon {

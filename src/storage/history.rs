@@ -14,7 +14,7 @@ const NEAR_END_THRESHOLD: f64 = 0.97;
 /// Do not save position if it is less than this time (the first seconds do not count)
 const MIN_SAVE_POSITION: f64 = 5.0;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HistoryEntry {
     pub path: PathBuf,
     pub title: String,

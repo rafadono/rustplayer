@@ -20,7 +20,7 @@ echo "=== RustPlayer v${VERSION} — build release ==="
 # ── Check system dependencies ──────────────────── ────────────────────
 check_dep() {
     if ! command -v "$1" &>/dev/null; then
-        echo "ERROR: '$1' no está instalado."
+        echo "ERROR: '$1' is not installed."
         echo "  Fedora:  sudo dnf install $2"
         echo "  Ubuntu:  sudo apt install $3"
         exit 1
@@ -32,7 +32,7 @@ check_dep cargo       cargo         cargo
 
 # Verify that libmpv is available
 if ! pkg-config --exists mpv 2>/dev/null; then
-    echo "ERROR: libmpv-dev no encontrado."
+    echo "ERROR: libmpv-dev not found."
     echo "  Fedora:  sudo dnf install mpv-libs-devel"
     echo "  Ubuntu:  sudo apt install libmpv-dev"
     exit 1
@@ -40,21 +40,21 @@ fi
 
 # ── Show active API keys (without revealing the value) ───────────────────────────
 echo ""
-echo "Keys configuradas:"
+echo "Configured keys:"
 if [[ -n "${RUSTPLAYER_LASTFM_KEY:-}" ]]; then
-    echo "  Last.fm:       ✓ (variable de entorno)"
+    echo "  Last.fm:       ✓ (environment variable)"
 else
-    echo "  Last.fm:       — (usando valor compilado, puede ser placeholder)"
+    echo "  Last.fm:       — (using compiled value, may be a placeholder)"
 fi
 if [[ -n "${RUSTPLAYER_OPENSUBS_KEY:-}" ]]; then
-    echo "  OpenSubtitles: ✓ (variable de entorno)"
+    echo "  OpenSubtitles: ✓ (environment variable)"
 else
-    echo "  OpenSubtitles: — (usando valor compilado, puede ser placeholder)"
+    echo "  OpenSubtitles: — (using compiled value, may be a placeholder)"
 fi
 echo ""
 
 # ── Compile ───────────────────────────────── ─────────────────────────────────
-echo "Compilando..."
+echo "Building..."
 
 # These flags are added to what [profile.release] already has in Cargo.toml
 RUSTFLAGS="-C target-cpu=native" \
@@ -62,36 +62,36 @@ cargo build --release 2>&1
 
 # Verify that the binary was generated
 if [[ ! -f "${TARGET_DIR}/${BINARY}" ]]; then
-    echo "ERROR: El binario no se generó."
+    echo "ERROR: The binary was not generated."
     exit 1
 fi
 
 SIZE=$(du -sh "${TARGET_DIR}/${BINARY}" | cut -f1)
 echo ""
-echo "✓ Binario generado: ${TARGET_DIR}/${BINARY} (${SIZE})"
+echo "✓ Binary generated: ${TARGET_DIR}/${BINARY} (${SIZE})"
 
 # ── Verify that there are no sensitive strings visible ───────────────────────────
 echo ""
-echo "Verificando strings expuestas..."
+echo "Checking for exposed strings..."
 
 LEAKED=0
 
 # Check that the real API keys do not appear in the binary
 for key in "${RUSTPLAYER_LASTFM_KEY:-}" "${RUSTPLAYER_OPENSUBS_KEY:-}"; do
     if [[ -n "$key" ]] && strings "${TARGET_DIR}/${BINARY}" | grep -qF "$key" 2>/dev/null; then
-        echo "  ADVERTENCIA: Una API key aparece en texto plano en el binario."
+        echo "  WARNING: An API key appears in plain text in the binary."
         LEAKED=1
     fi
 done
 
 # Check that there are no source code paths left (the strip should have removed them)
 if strings "${TARGET_DIR}/${BINARY}" | grep -q 'src/lastfm.rs\|src/opensubtitles.rs' 2>/dev/null; then
-    echo "  ADVERTENCIA: Paths de código fuente visibles — verifica que strip=true está activo."
+    echo "  WARNING: Source code paths are visible — verify that strip=true is active."
     LEAKED=1
 fi
 
 if [[ $LEAKED -eq 0 ]]; then
-    echo "  ✓ Sin strings sensibles visibles."
+    echo "  ✓ No sensitive strings visible."
 fi
 
 # ── Function to generate .deb ──────────────────────── ─────────────────────────
@@ -115,8 +115,8 @@ Package: rplayer
 Version: ${ver}
 Architecture: amd64
 Maintainer: RustPlayer
-Description: Reproductor de video y audio libre
- Reproductor basado en libmpv con interfaz gráfica egui.
+Description: Free video and audio player
+ A libmpv-based player with a Dioxus Desktop GUI.
 Depends: libmpv-dev | libmpv2 | libmpv1 | mpv, ffmpeg
 EOF
 
@@ -135,13 +135,13 @@ build_rpm() {
 Name:           rplayer
 Version:        ${ver}
 Release:        1%{?dist}
-Summary:        Reproductor de video y audio libre
+Summary:        Free video and audio player
 License:        MIT
 URL:            https://github.com/rustplayer/rustplayer
 Requires:       mpv-libs, ffmpeg
 
 %description
-Reproductor de video y audio libre desarrollado en Rust, egui y libmpv.
+Free video and audio player built in Rust with Dioxus Desktop and libmpv.
 
 %install
 mkdir -p %{buildroot}/usr/bin
@@ -189,7 +189,7 @@ if [[ "${1:-}" == "--package" ]]; then
     rm -rf "${PKG_STAGING}"
 
     echo ""
-    echo "✓ Paquete generado: ${TARBALL} ($(du -sh "${TARBALL}" | cut -f1))"
+    echo "✓ Package generated: ${TARBALL} ($(du -sh "${TARBALL}" | cut -f1))"
 
     # basic .deb if dpkg-deb is available
     if command -v dpkg-deb &>/dev/null; then
@@ -203,4 +203,4 @@ if [[ "${1:-}" == "--package" ]]; then
 fi
 
 echo ""
-echo "=== Build completado ==="
+echo "=== Build complete ==="

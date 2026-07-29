@@ -109,7 +109,9 @@ Drag video, audio or .CDG files directly onto the window to open them or add the
 
 ## Usage Notes
 
-- **A-B Loop**: Press `R` once to mark point A, again to mark B, and a third time to clear both. Markers A and B appear as lines in the seekbar.
+- **A-B Loop**: Press `R` (or click `🔂 A-B` in the player controls) once to mark point A, again to mark point B, and a third time to clear both. This sets mpv's real `ab-loop-a`/`ab-loop-b` properties, so the loop actually plays back-to-back. Markers A and B appear as lines in the seekbar.
+
+- **Seekbar thumbnail preview**: While dragging the seek slider, a small preview thumbnail pops up above it (generated in the background via `ffmpeg` when the file loads). It only appears while actively dragging — not on passive hover.
 
 - **Frame by frame**: Only works with the video paused. Useful for motion analysis, sports, animation.
 

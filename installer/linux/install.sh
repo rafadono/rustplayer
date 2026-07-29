@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Script de instalación para RPlayer en Fedora / Linux
+# install.sh — Installation script for RPlayer on Fedora / Linux
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,14 +14,14 @@ if [[ ! -f "${BIN_SOURCE}" ]]; then
 fi
 
 if [[ ! -f "${BIN_SOURCE}" ]]; then
-    echo "ERROR: No se encontró el ejecutable 'rplayer'. Por favor compila primero con 'cargo build --release'."
+    echo "ERROR: Could not find the 'rplayer' executable. Please build it first with 'cargo build --release'."
     exit 1
 fi
 
 MODE="${1:-user}"
 
 if [[ "${MODE}" == "--system" || "${MODE}" == "system" ]]; then
-    echo "=== Instalando RPlayer en el sistema (/usr/local) ==="
+    echo "=== Installing RPlayer system-wide (/usr/local) ==="
     sudo mkdir -p /usr/local/bin
     sudo mkdir -p /usr/share/applications
     sudo mkdir -p /usr/share/icons/hicolor/256x256/apps
@@ -43,11 +43,11 @@ if [[ "${MODE}" == "--system" || "${MODE}" == "system" ]]; then
         sudo gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
     fi
 
-    echo "✓ Instalación del sistema completada."
-    echo "  Ejecutable: /usr/local/bin/rplayer"
-    echo "  Lanzador: /usr/share/applications/rplayer.desktop"
+    echo "✓ System install complete."
+    echo "  Executable: /usr/local/bin/rplayer"
+    echo "  Launcher: /usr/share/applications/rplayer.desktop"
 else
-    echo "=== Instalando RPlayer para el usuario actual (~/.local) ==="
+    echo "=== Installing RPlayer for the current user (~/.local) ==="
     BIN_DIR="${HOME}/.local/bin"
     APP_DIR="${HOME}/.local/share/applications"
     ICON_DIR="${HOME}/.local/share/icons/hicolor/256x256/apps"
@@ -76,7 +76,7 @@ else
         gtk-update-icon-cache -f -t "${HOME}/.local/share/icons/hicolor" 2>/dev/null || true
     fi
 
-    echo "✓ Instalación de usuario completada."
-    echo "  Ejecutable: ${BIN_DIR}/rplayer"
-    echo "  Lanzador: ${APP_DIR}/rplayer.desktop"
+    echo "✓ User install complete."
+    echo "  Executable: ${BIN_DIR}/rplayer"
+    echo "  Launcher: ${APP_DIR}/rplayer.desktop"
 fi

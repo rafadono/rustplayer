@@ -4,7 +4,7 @@
 
 use serde::Deserialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Chapter {
     pub index: usize,
     pub title: String,

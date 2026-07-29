@@ -73,3 +73,6 @@ lcov.info
 
 # ── CodeGraph ─────────────────────────────────────────────────────────────────
 .codegraph/
+
+# ── Claude Code local runtime state (never shared/committed) ─────────────────
+.claude/

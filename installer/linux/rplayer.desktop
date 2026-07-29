@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=RPlayer
-Comment=Reproductor de video y audio libre (Rust + egui + libmpv)
+Comment=Reproductor de video y audio libre (Rust + Dioxus Desktop + libmpv)
 Exec=rplayer %U
 Icon=rplayer
 Terminal=false

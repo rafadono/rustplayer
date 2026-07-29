@@ -1,13 +1,13 @@
-# Compilación e Instalación de RPlayer
+# Building and Installing RPlayer
 
-## Requisitos comunes
+## Common Requirements
 
-- **Rust** 1.75 o superior (instalar desde https://rustup.rs)
-- **Cargo** (incluido con Rust)
+- **Rust** 1.75 or higher (install from https://rustup.rs)
+- **Cargo** (included with Rust)
 
 ---
 
-## 🐧 Linux — Instalación de dependencias por distribución
+## 🐧 Linux — Installing dependencies per distribution
 
 ### Fedora / RHEL / CentOS Stream
 ```bash
@@ -18,7 +18,10 @@ sudo dnf install -y --allowerasing ffmpeg libavcodec-freeworld mpv gcc pkg-confi
 ### Ubuntu / Debian / Linux Mint / Pop!_OS
 ```bash
 sudo apt update
-sudo apt install -y build-essential libmpv-dev pkg-config libssl-dev ffmpeg yt-dlp dpkg-deb
+sudo apt install -y build-essential libmpv-dev pkg-config libssl-dev \
+  libx11-dev libxcursor-dev libxrandr-dev libxi-dev libgl1-mesa-dev \
+  libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev libgdk-pixbuf-2.0-dev \
+  libxdo-dev ffmpeg yt-dlp dpkg-deb
 ```
 
 ### Arch Linux / Manjaro / EndeavourOS
@@ -38,74 +41,78 @@ sudo apk add build-base pkgconf mpv-dev openssl-dev ffmpeg yt-dlp
 
 ---
 
-## ⚙️ Compilación e Instalación en Linux
+## ⚙️ Building and Installing on Linux
 
-### Compilación rápida y empaquetado:
+### Quick build and packaging:
 ```bash
-# 1. Clonar y compilar en modo release
+# 1. Clone and build in release mode
 ./scripts/build-release.sh --package
 ```
 
-### Métodos de instalación:
+### Installation methods:
 
-#### Opción A: Script instalador universal (`install.sh`)
+#### Option A: Universal installer script (`install.sh`)
 ```bash
-# Instalación local en el usuario actual (~/.local/bin y menú de apps):
+# Local install for the current user (~/.local/bin and app menu):
 ./installer/linux/install.sh
 
-# O instalación para todo el sistema (/usr/local/bin):
+# Or system-wide install (/usr/local/bin):
 ./installer/linux/install.sh --system
 ```
 
-#### Opción B: Paquete `.deb` (Ubuntu / Debian / Mint)
-Si ejecutas `./scripts/build-release.sh --package` en Debian/Ubuntu, se generará el paquete `.deb` en `artifacts/`:
+#### Option B: `.deb` package (Ubuntu / Debian / Mint)
+Running `./scripts/build-release.sh --package` on Debian/Ubuntu generates the `.deb` package in `artifacts/`:
 ```bash
 sudo dpkg -i artifacts/rplayer_0.5.0-alpha_amd64.deb
 ```
 
-#### Opción C: Tarball distribuible (`.tar.gz`)
-El tarball generado en `artifacts/rplayer-0.5.0-alpha-linux-x86_64.tar.gz` contiene el binario, icono, lanzador `.desktop` y script de instalación listo para desplegar en cualquier equipo Linux.
+#### Option C: Distributable tarball (`.tar.gz`)
+The tarball generated at `artifacts/rplayer-0.5.0-alpha-linux-x86_64.tar.gz` contains the binary, icon, `.desktop` launcher, and an install script ready to deploy on any Linux machine.
 
 ---
 
-## 🪟 Windows — Instalación de dependencias y compilación
+## 🪟 Windows — Installing dependencies and building
 
-### Opción 1: MSVC nativo con PowerShell (Recomendado)
+### Option 1: Native MSVC with PowerShell (Recommended)
 
-1. **Instalar Herramientas de compilación de Visual Studio (MSVC)**:
-   - Descarga [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) e instala el workload *"Desarrollo para el escritorio con C++"*.
-2. **Instalar Rust para Windows**:
-   - Descarga e instala [rustup-init.exe](https://rustup.rs).
-3. **Descargar libmpv para Windows**:
-   - Descarga `mpv-dev-x86_64.7z` desde [SourceForge libmpv](https://sourceforge.net/projects/mpv-player-windows/files/libmpv/).
-   - Extrae el contenido en una carpeta (ej: `C:\libs\mpv`).
-4. **Instalar `ffmpeg` y `yt-dlp`**:
-   - Instala mediante `winget`:
+1. **Install Visual Studio Build Tools (MSVC)**:
+   - Download [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) and install the *"Desktop development with C++"* workload.
+2. **Install Rust for Windows**:
+   - Download and run [rustup-init.exe](https://rustup.rs).
+3. **Download libmpv for Windows**:
+   - Download `mpv-dev-x86_64.7z` from [SourceForge libmpv](https://sourceforge.net/projects/mpv-player-windows/files/libmpv/).
+   - Extract its contents into a folder (e.g. `C:\libs\mpv`).
+   - Generate `mpv.lib` for MSVC linking and set the required environment variables:
+     ```powershell
+     .\scripts\build-release.ps1 -SetupMpv "C:\libs\mpv\mpv-2.dll"
+     ```
+4. **Install `ffmpeg` and `yt-dlp`**:
+   - Install via `winget`:
      ```powershell
      winget install Gyan.FFmpeg
      winget install yt-dlp.yt-dlp
      ```
-5. **Configurar variables y compilar**:
-   - Usa el script auxiliar en PowerShell:
+5. **Set variables and build**:
+   - Use the PowerShell helper script:
      ```powershell
      .\scripts\build-release.ps1 -Package
      ```
-   - *Si tienes Inno Setup instalado, generará el instalador exe en `artifacts/`*.
+   - *If Inno Setup is installed, it will generate the exe installer in `artifacts/`*.
 
 ---
 
-### Opción 2: Cross-compilar para Windows desde Linux (con MinGW)
+### Option 2: Cross-compile for Windows from Linux (with MinGW)
 
 ```bash
 rustup target add x86_64-pc-windows-gnu
 
-# En Fedora:
+# On Fedora:
 sudo dnf install -y mingw64-gcc
 
-# En Ubuntu/Debian:
+# On Ubuntu/Debian:
 sudo apt install -y mingw-w64
 
-# Compilar ejecutable .exe
+# Build the .exe
 cargo build --release --target x86_64-pc-windows-gnu
 ```
 
@@ -117,17 +124,17 @@ The most direct path is `cargo build --release`.
 
 - `./scripts/build-release.sh [--package]` — release build on Linux/WSL and optional packaging.
 - `./scripts/build-release.ps1 [-Package]` — release build on Windows and generates Inno Setup installer if available.
-- `./scripts/setup-mpv-windows.ps1 -MpvDllPath <ruta>` — generates `mpv.lib` for MSVC builds with Windows.
+- `./scripts/build-release.ps1 -SetupMpv <path-to-mpv-2.dll>` — one-time dev setup: generates `mpv.lib` for MSVC builds with Windows, then exits without building.
 
 ---
 
 ## Useful environment variables
 
 ```bash
-RUST_LOG=debug     # Activa logs de debug
-RUST_LOG=warn      # Solo warnings (default)
-RUST_BACKTRACE=1   # Backtrace en panics
-MPV_VERBOSE=1      # Logs de libmpv
+RUST_LOG=debug     # Enable debug logs
+RUST_LOG=warn      # Warnings only (default)
+RUST_BACKTRACE=1   # Backtrace on panics
+MPV_VERBOSE=1      # libmpv logs
 ```
 
 ---
@@ -139,7 +146,7 @@ MPV_VERBOSE=1      # Logs de libmpv
   - manual check from Settings,
   - update installation from the UI.
 - During installation, a backup of the current executable (`.bak`) is created.
-- The new version is validated with `--self-check`; If it fails, the backup is automatically restored (fallback).
+- The new version is validated with `--self-check`; if it fails, the backup is automatically restored (fallback).
 
 ### Internal self-check
 
@@ -157,10 +164,10 @@ If it returns an exit code other than 0, the installation is considered failed a
 
 ```
 rplayer/
-├── rplayer (o rplayer.exe)
-├── mpv-2.dll           (solo Windows)
-├── ffmpeg              (en PATH del sistema)
-└── yt-dlp              (en PATH del sistema)
+├── rplayer (or rplayer.exe)
+├── mpv-2.dll           (Windows only)
+├── ffmpeg              (in system PATH)
+└── yt-dlp              (in system PATH)
 ```
 
 ---
@@ -170,38 +177,38 @@ rplayer/
 See [docker-compose.yml](../docker-compose.yml) in the project root.
 
 ```bash
-# Build Linux release dentro de Docker
+# Build the Linux release inside Docker
 docker compose run --rm build-linux
 
-# El binario queda en ./artifacts/
+# The binary ends up in ./artifacts/
 ```
 
 ---
 
 ## CI/GitHub Actions
 
-The `.github/workflows/ci.yml` file automatically executes the following tasks when you upload code or create a pull request:
+The `.github/workflows/ci.yml` file automatically runs the following tasks on push or pull request:
 
 - `cargo fmt --all -- --check` — Check the code format and style
 - `cargo clippy --all-targets --all-features -- -D warnings` — Run the Rust static linter
-- `cargo test --all` — Runs unit and integrated tests
+- `cargo test --all` — Runs unit and integration tests
 - `cargo audit` — Checks for known security vulnerabilities in dependencies
-- `cargo build --release` — Generate the production executable (only in push to branch `main`)
+- `cargo build --release` — Generate the production executable (only on push to the `main` branch)
 
-### Local verification prior to uploading to GitHub
+### Local verification before pushing to GitHub
 
-To ensure that your code passes continuous integration checks, you can configure and run the checks locally:
+To make sure your code passes continuous integration checks, you can set up and run the checks locally:
 
 1. **Pre-commit hooks**:
    ```bash
    pre-commit install
    ```
-This will automatically run `cargo fmt` and `cargo clippy` before each change commit. You can run them manually at any time:
+This will automatically run `cargo fmt` and `cargo clippy` before each commit. You can also run them manually at any time:
    ```bash
    pre-commit run --all-files
    ```
 
-2. **Manual test execution**:
+2. **Manual test run**:
    ```bash
    cargo test --all
    ```
@@ -214,12 +221,12 @@ This will automatically run `cargo fmt` and `cargo clippy` before each change co
 
 ```bash
 sudo ldconfig
-# O en Fedora:
+# Or on Fedora:
 sudo dnf install mpv-libs
 ```
 
 **Error: `mpv-2.dll not found` (Windows)**
-Make sure `libmpv-2.dll` is in the same directory as `.exe` (or in `vendor/mpv` and with `RPLAYER_MPV_LIB_DIR` configured).
+Make sure `libmpv-2.dll` is in the same directory as the `.exe` (or in `vendor/mpv` with `RPLAYER_MPV_LIB_DIR` configured).
 
 **Video not displayed (black screen)**
 Verify that the system has OpenGL support:
@@ -232,8 +239,17 @@ glxinfo | grep "OpenGL version"
 
 ```bash
 which ffmpeg
-# Si no está: sudo dnf install ffmpeg
+# If missing: sudo dnf install ffmpeg
 ```
+
+**Video freezes or disappears when using the progress bar (Wayland)**
+mpv's video embedding uses X11's `wid` API (via `gdkx11`); there is no native
+Wayland support. On Wayland sessions (e.g. Fedora Workstation with GNOME,
+which defaults to Wayland), RPlayer forces `GDK_BACKEND=x11` on startup so
+GTK uses XWayland (present by default on Fedora, Ubuntu, and Debian) and
+always gets a valid `wid`. If you need to force a different GDK backend for
+some reason, set the `GDK_BACKEND` environment variable before running
+`rplayer` — RPlayer respects the value if it's already set.
 
 ---
 
@@ -245,27 +261,27 @@ RPlayer applies three layers of protection in the release build:
 
 ```toml
 [profile.release]
-strip = true          # Elimina nombres de funciones y paths de código fuente
-lto = true            # Link-time optimization: binario más opaco
-codegen-units = 1     # Un solo chunk de código
-panic = "abort"       # Sin mensajes de panic con nombres de archivos .rs
+strip = true          # Removes function names and source file paths
+lto = true            # Link-time optimization: a more opaque binary
+codegen-units = 1     # A single code chunk
+panic = "abort"       # No panic messages with .rs file names
 ```
 
 ### 2. API keys obfuscated with `obfstr`
 
-The keys **do not appear in plain text** in the binary. They cannot be extracted with `strings binario`.
+The keys **do not appear in plain text** in the binary. They cannot be extracted with `strings binary`.
 
-To compile with your real keys:
+To build with your real keys:
 
 ```bash
 # Linux / macOS
-export RUSTPLAYER_LASTFM_KEY="tu_key"
-export RUSTPLAYER_OPENSUBS_KEY="tu_key"
+export RUSTPLAYER_LASTFM_KEY="your_key"
+export RUSTPLAYER_OPENSUBS_KEY="your_key"
 cargo build --release
 
 # Windows PowerShell
-$env:RUSTPLAYER_LASTFM_KEY="tu_key"
-$env:RUSTPLAYER_OPENSUBS_KEY="tu_key"
+$env:RUSTPLAYER_LASTFM_KEY="your_key"
+$env:RUSTPLAYER_OPENSUBS_KEY="your_key"
 cargo build --release
 ```
 
@@ -274,7 +290,7 @@ cargo build --release
 The installer generated with Inno Setup uses `lzma2/ultra64 + SolidCompression`.
 The internal `.exe` cannot be extracted directly with 7-Zip or similar tools.
 
-### What protects and what doesn't
+### What is protected and what isn't
 
 | Threat                           | State                                                              |
 | --------------------------------- | ------------------------------------------------------------------- |

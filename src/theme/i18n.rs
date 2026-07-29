@@ -174,6 +174,163 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "repeat.none" => "Sin repetición",
             "repeat.one" => "Repetir una",
             "repeat.all" => "Repetir todo",
+
+            // Status messages (main.rs event handlers / polling coroutine)
+            "opensub.searching" => "Buscando...",
+            "opensub.results_count" => "{} resultado(s)",
+            "opensub.downloading" => "Descargando...",
+            "opensub.saved" => "Subtítulo guardado: {}",
+            "opensub.not_configured" => "OpenSubtitles no configurado (falta API key)",
+            "common.error_prefix" => "Error: {}",
+            "trim.done" => "Listo: {}",
+            "trim.processing" => "Procesando...",
+            "trim.ffmpeg_not_found" => "ffmpeg no encontrado en PATH",
+            "lastfm.connecting" => "Conectando...",
+            "lastfm.connected_status" => "Conectado",
+            "bookmarks.default_label" => "Marcador {}",
+            "dialog.media_filter" => "Video y Audio",
+            "dialog.subtitles_filter" => "Subtítulos",
+
+            // Header bar
+            "header.open_button" => "Abrir",
+            "header.audio_tooltip" => "Ecualizador, Pistas de Audio, Karaoke",
+            "header.video_tooltip" => "Subtítulos, Ajustes de Imagen, OpenSubtitles",
+            "header.tools_tooltip" => "Marcadores, Recorte, Ficha Técnica, Ajustes",
+            "header.switch_to_light" => "Cambiar a Modo Claro",
+            "header.switch_to_dark" => "Cambiar a Modo Oscuro",
+            "header.switch_language" => "Cambiar idioma",
+
+            // Player controls
+            "controls.seek_back_10" => "Retroceder 10 segundos",
+            "controls.seek_fwd_10" => "Adelantar 10 segundos",
+            "controls.play" => "▶ Reproducir",
+            "controls.pause" => "⏸ Pausar",
+            "controls.ab_loop_tooltip" => "Bucle A-B",
+            "controls.trim_tooltip" => "Recortar Video",
+            "controls.search_subtitles_tooltip" => "Buscar Subtítulos",
+            "controls.fullscreen_tooltip" => "Pantalla Completa",
+
+            // Playlist panel
+            "playlist.empty_message" => "Lista vacía. Arrastra archivos o usa 'Abrir archivo'.",
+
+            // Video stage empty state
+            "video.no_file_loaded" => "Ningún archivo cargado",
+            "video.no_file_hint" => {
+                "Haz clic en 'Abrir archivo' para seleccionar un video o música."
+            }
+
+            // Audio modal
+            "audio.tab_equalizer" => "🎚️ Ecualizador PEQ",
+            "audio.tab_tracks" => "🎧 Pistas de Audio",
+            "audio.tab_karaoke" => "🎤 Karaoke & Tono",
+            "audio.preset_flat" => "Plano",
+            "audio.preset_bass_boost" => "Realce de Graves",
+            "audio.preset_treble_boost" => "Realce de Agudos",
+            "audio.preset_vocal" => "Vocal",
+            "audio.preset_rock" => "Rock",
+            "audio.preset_pop" => "Pop",
+            "audio.preset_classical" => "Clásica",
+            "audio.preset_jazz" => "Jazz",
+            "audio.modal_title" => "🎛️ Centro de Audio y Sonido",
+            "audio.enable_eq" => "Activar ecualizador paramétrico",
+            "audio.band_fallback" => "Banda",
+            "audio.tracks_available" => "Pistas de Audio Disponibles",
+            "audio.delay_label" => "Desfase de Audio",
+            "audio.lastfm_section_title" => "🎵 Integración Last.fm Scrobbler",
+            "audio.lastfm_description" => {
+                "Registra automáticamente tus canciones escuchadas en tu perfil de Last.fm."
+            }
+            "audio.lastfm_connected_as" => "✅ Conectado como ",
+            "audio.lastfm_disconnect" => "Desconectar",
+            "audio.lastfm_username_placeholder" => "Usuario de Last.fm",
+            "audio.lastfm_password_placeholder" => "Contraseña",
+            "audio.lastfm_connect_button" => "🔑 Conectar Cuenta Last.fm",
+            "audio.enable_karaoke" => "Activar Supresión Vocal (Modo Karaoke)",
+            "audio.pitch_label" => "Ajuste de Tono (Pitch Shift)",
+            "audio.semitones_unit" => "semitonos",
+
+            // Video modal
+            "video_modal.tab_subtitles" => "💬 Subtítulos & OpenSubtitles",
+            "video_modal.tab_image" => "🎨 Ajustes de Imagen",
+            "video_modal.title" => "🎬 Centro de Video y Subtítulos",
+            "video_modal.embedded_tracks_title" => "Pistas de Subtítulos Integradas",
+            "video_modal.load_external_sub" => "📁 Cargar Archivo (.srt / .vtt)",
+            "video_modal.sub_delay_label" => "Desfase de Subtítulos",
+            "video_modal.opensubtitles_section_title" => "📜 Buscar Subtítulos en OpenSubtitles",
+            "video_modal.search_placeholder" => "Nombre de película o serie...",
+            "video_modal.search_button" => "🔍 Buscar",
+            "video_modal.download_button" => "⬇ Descargar",
+            "video_modal.brightness_label" => "Brillo",
+            "video_modal.contrast_label" => "Contraste",
+            "video_modal.saturation_label" => "Saturación",
+            "video_modal.hue_label" => "Tono (Hue)",
+            "video_modal.gamma_label" => "Gamma",
+            "video_modal.reset_defaults" => "🔄 Restablecer Valores por Defecto",
+
+            // Tools modal
+            "tools_modal.tab_bookmarks" => "🔖 Marcadores & Notas",
+            "tools_modal.tab_trim" => "✂️ Recorte sin Pérdida",
+            "tools_modal.tab_media_info" => "ℹ️ Ficha Técnica",
+            "tools_modal.tab_settings" => "⚙️ Red & Preferencias",
+            "tools_modal.title" => "⚙️ Centro de Herramientas y Ajustes",
+            "tools_modal.bookmarks_of_file" => "Marcadores del Archivo",
+            "tools_modal.add_bookmark_button" => "➕ Añadir Marcador Actual",
+            "tools_modal.jump_to_bookmark" => "▶ Saltar",
+            "tools_modal.trim_title" => "Recortar Clip de Video sin Pérdida",
+            "tools_modal.trim_start_label" => "Punto de Inicio",
+            "tools_modal.trim_end_label" => "Punto Final",
+            "tools_modal.trim_export_button" => "✂️ Exportar Clip Recortado",
+            "tools_modal.info_file" => "Archivo:",
+            "tools_modal.info_container" => "Contenedor:",
+            "tools_modal.info_resolution" => "Resolución:",
+            "tools_modal.info_fps" => "Fotogramas (FPS):",
+            "tools_modal.info_video_codec" => "Códec Video:",
+            "tools_modal.info_audio_codec" => "Códec Audio:",
+            "tools_modal.info_audio_channels" => "Canales de Audio:",
+            "tools_modal.info_video_bitrate" => "Tasa de Bits Video:",
+            "tools_modal.info_audio_bitrate" => "Tasa de Bits Audio:",
+            "tools_modal.info_file_size" => "Tamaño de Archivo:",
+            "tools_modal.info_total_duration" => "Duración Total:",
+            "tools_modal.remote_section_title" => "📱 Servidor de Control Remoto HTTP",
+            "tools_modal.remote_description" => {
+                "Controla la reproducción desde tu teléfono u otro navegador en la red local (http://localhost:{})."
+            }
+            "tools_modal.remote_stop_button" => "⏹ Detener Servidor Remoto",
+            "tools_modal.remote_start_button" => "▶ Iniciar Servidor Remoto (Puerto {})",
+            "tools_modal.sleep_timer_section_title" => "⏰ Temporizador de Apagado (Sleep Timer)",
+            "tools_modal.sleep_timer_active" => "Activo — quedan {}",
+            "tools_modal.sleep_timer_cancel" => "Cancelar",
+
+            // Playlist import/export (Tier 6)
+            "dialog.playlist_filter" => "Playlist (M3U/PLS)",
+            "playlist.import_tooltip" => "Importar playlist (M3U/PLS)",
+            "playlist.export_tooltip" => "Exportar playlist (M3U)",
+
+            // History tab (Tier 1)
+            "tools_modal.tab_history" => "🕑 Historial",
+            "tools_modal.history_resume_at" => "Continuar en {}",
+            "tools_modal.history_play_count" => "{} reproducciones",
+            "tools_modal.history_resume_button" => "▶ Reanudar",
+
+            // Notes tab (Tier 2)
+            "tools_modal.tab_notes" => "📝 Notas",
+            "tools_modal.notes_placeholder" => "Escribe una nota en la posición actual...",
+            "tools_modal.notes_add_button" => "➕ Añadir Nota",
+            "tools_modal.notes_empty" => "Sin notas para este archivo.",
+            "tools_modal.notes_export_button" => "💾 Exportar Notas",
+            "tools_modal.notes_copied" => "Notas exportadas",
+
+            // Chapters tab (Tier 4)
+            "tools_modal.tab_chapters" => "📑 Capítulos",
+            "tools_modal.chapters_empty" => "Este archivo no tiene capítulos.",
+
+            // Performance/metrics overlay (Tier 5)
+            "tools_modal.metrics_toggle" => "Mostrar overlay de rendimiento (FPS, frames perdidos)",
+            "video.metrics_fps" => "FPS: {}",
+            "video.metrics_dropped" => "Frames perdidos: {}",
+            "video.metrics_hwdec_on" => "HW decode: activo",
+            "video.metrics_hwdec_off" => "HW decode: inactivo",
+            "video.metrics_buffer" => "Buffer: {}s",
             _ => key,
         },
         Language::En => match key {
@@ -330,6 +487,161 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "repeat.none" => "No repeat",
             "repeat.one" => "Repeat one",
             "repeat.all" => "Repeat all",
+
+            // Status messages (main.rs event handlers / polling coroutine)
+            "opensub.searching" => "Searching...",
+            "opensub.results_count" => "{} result(s)",
+            "opensub.downloading" => "Downloading...",
+            "opensub.saved" => "Subtitle saved: {}",
+            "opensub.not_configured" => "OpenSubtitles not configured (missing API key)",
+            "common.error_prefix" => "Error: {}",
+            "trim.done" => "Done: {}",
+            "trim.processing" => "Processing...",
+            "trim.ffmpeg_not_found" => "ffmpeg not found in PATH",
+            "lastfm.connecting" => "Connecting...",
+            "lastfm.connected_status" => "Connected",
+            "bookmarks.default_label" => "Bookmark {}",
+            "dialog.media_filter" => "Video & Audio",
+            "dialog.subtitles_filter" => "Subtitles",
+
+            // Header bar
+            "header.open_button" => "Open",
+            "header.audio_tooltip" => "Equalizer, Audio Tracks, Karaoke",
+            "header.video_tooltip" => "Subtitles, Image Settings, OpenSubtitles",
+            "header.tools_tooltip" => "Bookmarks, Trim, Media Info, Settings",
+            "header.switch_to_light" => "Switch to Light Mode",
+            "header.switch_to_dark" => "Switch to Dark Mode",
+            "header.switch_language" => "Switch language",
+
+            // Player controls
+            "controls.seek_back_10" => "Rewind 10 seconds",
+            "controls.seek_fwd_10" => "Fast-forward 10 seconds",
+            "controls.play" => "▶ Play",
+            "controls.pause" => "⏸ Pause",
+            "controls.ab_loop_tooltip" => "A-B Loop",
+            "controls.trim_tooltip" => "Trim Video",
+            "controls.search_subtitles_tooltip" => "Search Subtitles",
+            "controls.fullscreen_tooltip" => "Fullscreen",
+
+            // Playlist panel
+            "playlist.empty_message" => "Empty list. Drag files or use 'Open file'.",
+
+            // Video stage empty state
+            "video.no_file_loaded" => "No file loaded",
+            "video.no_file_hint" => "Click 'Open file' to select a video or audio file.",
+
+            // Audio modal
+            "audio.tab_equalizer" => "🎚️ Parametric EQ",
+            "audio.tab_tracks" => "🎧 Audio Tracks",
+            "audio.tab_karaoke" => "🎤 Karaoke & Pitch",
+            "audio.preset_flat" => "Flat",
+            "audio.preset_bass_boost" => "Bass Boost",
+            "audio.preset_treble_boost" => "Treble Boost",
+            "audio.preset_vocal" => "Vocal",
+            "audio.preset_rock" => "Rock",
+            "audio.preset_pop" => "Pop",
+            "audio.preset_classical" => "Classical",
+            "audio.preset_jazz" => "Jazz",
+            "audio.modal_title" => "🎛️ Audio & Sound Center",
+            "audio.enable_eq" => "Enable parametric equalizer",
+            "audio.band_fallback" => "Band",
+            "audio.tracks_available" => "Available Audio Tracks",
+            "audio.delay_label" => "Audio Delay",
+            "audio.lastfm_section_title" => "🎵 Last.fm Scrobbler Integration",
+            "audio.lastfm_description" => {
+                "Automatically logs your listened tracks to your Last.fm profile."
+            }
+            "audio.lastfm_connected_as" => "✅ Connected as ",
+            "audio.lastfm_disconnect" => "Disconnect",
+            "audio.lastfm_username_placeholder" => "Last.fm username",
+            "audio.lastfm_password_placeholder" => "Password",
+            "audio.lastfm_connect_button" => "🔑 Connect Last.fm Account",
+            "audio.enable_karaoke" => "Enable Vocal Suppression (Karaoke Mode)",
+            "audio.pitch_label" => "Pitch Shift",
+            "audio.semitones_unit" => "semitones",
+
+            // Video modal
+            "video_modal.tab_subtitles" => "💬 Subtitles & OpenSubtitles",
+            "video_modal.tab_image" => "🎨 Image Settings",
+            "video_modal.title" => "🎬 Video & Subtitles Center",
+            "video_modal.embedded_tracks_title" => "Embedded Subtitle Tracks",
+            "video_modal.load_external_sub" => "📁 Load File (.srt / .vtt)",
+            "video_modal.sub_delay_label" => "Subtitle Delay",
+            "video_modal.opensubtitles_section_title" => "📜 Search Subtitles on OpenSubtitles",
+            "video_modal.search_placeholder" => "Movie or show name...",
+            "video_modal.search_button" => "🔍 Search",
+            "video_modal.download_button" => "⬇ Download",
+            "video_modal.brightness_label" => "Brightness",
+            "video_modal.contrast_label" => "Contrast",
+            "video_modal.saturation_label" => "Saturation",
+            "video_modal.hue_label" => "Hue",
+            "video_modal.gamma_label" => "Gamma",
+            "video_modal.reset_defaults" => "🔄 Reset to Defaults",
+
+            // Tools modal
+            "tools_modal.tab_bookmarks" => "🔖 Bookmarks & Notes",
+            "tools_modal.tab_trim" => "✂️ Lossless Trim",
+            "tools_modal.tab_media_info" => "ℹ️ Media Info",
+            "tools_modal.tab_settings" => "⚙️ Network & Preferences",
+            "tools_modal.title" => "⚙️ Tools & Settings Center",
+            "tools_modal.bookmarks_of_file" => "File Bookmarks",
+            "tools_modal.add_bookmark_button" => "➕ Add Current Bookmark",
+            "tools_modal.jump_to_bookmark" => "▶ Jump",
+            "tools_modal.trim_title" => "Trim Video Clip Losslessly",
+            "tools_modal.trim_start_label" => "Start Point",
+            "tools_modal.trim_end_label" => "End Point",
+            "tools_modal.trim_export_button" => "✂️ Export Trimmed Clip",
+            "tools_modal.info_file" => "File:",
+            "tools_modal.info_container" => "Container:",
+            "tools_modal.info_resolution" => "Resolution:",
+            "tools_modal.info_fps" => "Frame Rate (FPS):",
+            "tools_modal.info_video_codec" => "Video Codec:",
+            "tools_modal.info_audio_codec" => "Audio Codec:",
+            "tools_modal.info_audio_channels" => "Audio Channels:",
+            "tools_modal.info_video_bitrate" => "Video Bitrate:",
+            "tools_modal.info_audio_bitrate" => "Audio Bitrate:",
+            "tools_modal.info_file_size" => "File Size:",
+            "tools_modal.info_total_duration" => "Total Duration:",
+            "tools_modal.remote_section_title" => "📱 HTTP Remote Control Server",
+            "tools_modal.remote_description" => {
+                "Control playback from your phone or another browser on the local network (http://localhost:{})."
+            }
+            "tools_modal.remote_stop_button" => "⏹ Stop Remote Server",
+            "tools_modal.remote_start_button" => "▶ Start Remote Server (Port {})",
+            "tools_modal.sleep_timer_section_title" => "⏰ Sleep Timer",
+            "tools_modal.sleep_timer_active" => "Active — {} remaining",
+            "tools_modal.sleep_timer_cancel" => "Cancel",
+
+            // Playlist import/export (Tier 6)
+            "dialog.playlist_filter" => "Playlist (M3U/PLS)",
+            "playlist.import_tooltip" => "Import playlist (M3U/PLS)",
+            "playlist.export_tooltip" => "Export playlist (M3U)",
+
+            // History tab (Tier 1)
+            "tools_modal.tab_history" => "🕑 History",
+            "tools_modal.history_resume_at" => "Resume at {}",
+            "tools_modal.history_play_count" => "{} plays",
+            "tools_modal.history_resume_button" => "▶ Resume",
+
+            // Notes tab (Tier 2)
+            "tools_modal.tab_notes" => "📝 Notes",
+            "tools_modal.notes_placeholder" => "Write a note at the current position...",
+            "tools_modal.notes_add_button" => "➕ Add Note",
+            "tools_modal.notes_empty" => "No notes for this file.",
+            "tools_modal.notes_export_button" => "💾 Export Notes",
+            "tools_modal.notes_copied" => "Notes exported",
+
+            // Chapters tab (Tier 4)
+            "tools_modal.tab_chapters" => "📑 Chapters",
+            "tools_modal.chapters_empty" => "This file has no chapters.",
+
+            // Performance/metrics overlay (Tier 5)
+            "tools_modal.metrics_toggle" => "Show performance overlay (FPS, dropped frames)",
+            "video.metrics_fps" => "FPS: {}",
+            "video.metrics_dropped" => "Dropped frames: {}",
+            "video.metrics_hwdec_on" => "HW decode: on",
+            "video.metrics_hwdec_off" => "HW decode: off",
+            "video.metrics_buffer" => "Buffer: {}s",
             _ => key,
         },
     }

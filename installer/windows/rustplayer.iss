@@ -10,7 +10,7 @@
 #define AppName      "RustPlayer"
 #define AppVersion   "0.5.0-alpha"
 #define AppPublisher "RustPlayer"
-#define AppURL       "https://github.com/TU_USUARIO/rustplayer"
+#define AppURL       "https://github.com/YOUR_USERNAME/rustplayer"
 #define AppExeName   "rplayer.exe"
 #define AppIcon      "assets\icon.ico"
 
@@ -74,7 +74,7 @@ Source: "assets\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#AppName}";           Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\icon.ico"
-Name: "{group}\Desinstalar RustPlayer"; Filename: "{uninstallexe}"
+Name: "{group}\Uninstall RustPlayer"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}";     Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\icon.ico"; Tasks: desktopicon
 
 [Registry]

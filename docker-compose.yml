@@ -1,37 +1,37 @@
 # RPlayer — docker-compose.yml
 #
-# PROPÓSITO: Compilación y CI/CD. No para ejecutar el reproductor.
-# El reproductor requiere display, OpenGL y audio del host.
+# PURPOSE: build and CI/CD only. Not for running the player.
+# The player requires a display, OpenGL, and host audio.
 #
-# Comandos útiles:
+# Useful commands:
 #
-#   Compilar para Linux (Fedora):
+#   Build for Linux (Fedora):
 #     docker compose run --rm build-linux
 #
-#   Compilar para Linux (Ubuntu, mayor compatibilidad):
+#   Build for Linux (Ubuntu, better compatibility):
 #     docker compose run --rm build-ubuntu
 #
-#   Ejecutar lint y check:
+#   Run lint and check:
 #     docker compose run --rm lint
 #
-#   Ejecutar tests:
+#   Run tests:
 #     docker compose run --rm test
 #
-#   Ver logs del build:
+#   View build logs:
 #     docker compose run --rm build-linux 2>&1 | tee build.log
 #
-# El binario resultante queda en ./artifacts/rplayer
+# The resulting binary ends up in ./artifacts/rplayer
 
 version: "3.9"
 
-# ── Volúmenes compartidos ──────────────────────────────────────────────────
+# ── Shared volumes ──────────────────────────────────────────────────
 volumes:
   cargo-cache:
     driver: local
   registry-cache:
     driver: local
 
-# ── Configuración base compartida ──────────────────────────────────────────
+# ── Shared base configuration ──────────────────────────────────────────
 x-build-common: &build-common
   working_dir: /workspace
   volumes:
@@ -44,27 +44,27 @@ x-build-common: &build-common
     - CARGO_TERM_COLOR=always
     - CARGO_INCREMENTAL=0
 
-# ── Servicios ──────────────────────────────────────────────────────────────
+# ── Services ──────────────────────────────────────────────────────────────
 services:
 
-  # ── Build Fedora (entorno de desarrollo principal) ──────────────────────
+  # ── Fedora build (main development environment) ──────────────────────
   build-linux:
     <<: *build-common
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder-ubuntu  # Ubuntu tiene mayor compatibilidad de binarios
+      target: builder-ubuntu  # Ubuntu has better binary compatibility
     command: >
       sh -c "
         set -e &&
-        echo '=== Compilando RPlayer ===' &&
+        echo '=== Building RPlayer ===' &&
         cargo build --release &&
         cp target/release/rplayer /out/rplayer &&
-        echo '=== Build completado: /out/rplayer ===' &&
+        echo '=== Build complete: /out/rplayer ===' &&
         ls -lh /out/rplayer
       "
 
-  # ── Build Ubuntu (compatibilidad máxima de glibc) ───────────────────────
+  # ── Ubuntu build (maximum glibc compatibility) ───────────────────────
   build-ubuntu:
     <<: *build-common
     image: ubuntu:22.04
@@ -105,7 +105,7 @@ services:
         echo '=== Lint OK ==='
       "
 
-  # ── Check (más rápido que build completo) ───────────────────────────────
+  # ── Check (faster than a full build) ───────────────────────────────
   check:
     <<: *build-common
     build:
@@ -123,7 +123,7 @@ services:
       target: rust-base
     command: cargo test --all
 
-  # ── Shell interactivo (debugging del entorno de build) ──────────────────
+  # ── Interactive shell (debugging the build environment) ──────────────────
   shell:
     <<: *build-common
     build:

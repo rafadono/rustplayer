@@ -4,7 +4,7 @@
 
 use serde::Deserialize;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct MediaInfo {
     pub filename: String,
     pub format: String,
