@@ -524,8 +524,21 @@ impl Player {
         self.mpv.command("screenshot", &["video"])
     }
 
-    pub fn set_audio_filters(&self, eq: &crate::equalizer::Equalizer, loudnorm: bool) {
-        let af = eq.to_mpv_af_chain(loudnorm);
+    pub fn set_audio_filters(
+        &self,
+        eq: &crate::equalizer::Equalizer,
+        loudnorm: bool,
+        karaoke_enabled: bool,
+        karaoke_pitch: f64,
+    ) {
+        let mut af = eq.to_mpv_af_chain(loudnorm);
+        let karaoke_af = crate::karaoke::to_mpv_af_chain(karaoke_enabled, karaoke_pitch);
+        if !karaoke_af.is_empty() {
+            if !af.is_empty() {
+                af.push(',');
+            }
+            af.push_str(&karaoke_af);
+        }
         let _ = self.mpv.set_property("af", af.as_str());
     }
 

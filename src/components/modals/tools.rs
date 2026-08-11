@@ -1,16 +1,19 @@
 use dioxus::prelude::*;
 use rplayer::bookmarks::Bookmark;
 use rplayer::chapters::Chapter;
+use rplayer::converter::ConvertPreset;
 use rplayer::history::HistoryEntry;
 use rplayer::i18n::{tr, Language};
 use rplayer::media_info::MediaInfo;
 use rplayer::notes::Note;
+use rplayer::updater::{UpdateChannel, UpdateInfo};
 use std::path::PathBuf;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ToolsTab {
     Bookmarks,
     Trim,
+    Convert,
     MediaInfo,
     History,
     Notes,
@@ -33,6 +36,9 @@ pub fn ToolsModal(
     duration: f64,
     on_start_trim: EventHandler<(f64, f64)>,
     trim_status: String,
+    // Convert
+    on_start_convert: EventHandler<ConvertPreset>,
+    convert_status: String,
     // Media Info
     filename: String,
     media_info: Option<MediaInfo>,
@@ -60,12 +66,25 @@ pub fn ToolsModal(
     // Performance overlay
     show_metrics: bool,
     on_toggle_metrics: EventHandler<bool>,
+    // Update checker
+    update_channel: UpdateChannel,
+    on_change_update_channel: EventHandler<UpdateChannel>,
+    auto_check_updates: bool,
+    on_toggle_auto_check_updates: EventHandler<bool>,
+    update_manifest_url_stable: String,
+    update_manifest_url_beta: String,
+    on_change_manifest_url: EventHandler<(UpdateChannel, String)>,
+    update_status: String,
+    update_info: Option<UpdateInfo>,
+    on_check_updates: EventHandler<()>,
+    on_install_update: EventHandler<()>,
 ) -> Element {
     let language = use_context::<Signal<Language>>();
     let mut note_input = use_signal(String::new);
     let tabs = [
         (ToolsTab::Bookmarks, "tools_modal.tab_bookmarks"),
         (ToolsTab::Trim, "tools_modal.tab_trim"),
+        (ToolsTab::Convert, "tools_modal.tab_convert"),
         (ToolsTab::MediaInfo, "tools_modal.tab_media_info"),
         (ToolsTab::History, "tools_modal.tab_history"),
         (ToolsTab::Notes, "tools_modal.tab_notes"),
@@ -75,6 +94,7 @@ pub fn ToolsModal(
 
     let mut start_time = use_signal(|| 0.0f64);
     let mut end_time = use_signal(|| duration);
+    let mut convert_preset = use_signal(|| ConvertPreset::Mp4H264);
 
     rsx! {
         div { class: "modal-overlay", onclick: move |_| on_close.call(()),
@@ -157,6 +177,41 @@ pub fn ToolsModal(
                                         button { class: "btn-primary", onclick: move |_| on_start_trim.call((start_time(), end_time())), "{tr(language(), \"tools_modal.trim_export_button\")}" }
                                         if !trim_status.is_empty() {
                                             span { style: "font-size: 12px; color: var(--text-muted);", "{trim_status}" }
+                                        }
+                                    }
+                                }
+                            },
+                            ToolsTab::Convert => rsx! {
+                                div { class: "control-group-col",
+                                    h4 { class: "section-title", "{tr(language(), \"tools_modal.convert_title\")}" }
+                                    div { class: "slider-row",
+                                        span { "{tr(language(), \"tools_modal.convert_preset_label\")}" }
+                                        select {
+                                            class: "select-input",
+                                            onchange: move |e| {
+                                                if let Some(p) = ConvertPreset::all().iter().find(|p| p.label() == e.value()) {
+                                                    convert_preset.set(p.clone());
+                                                }
+                                            },
+                                            for preset in ConvertPreset::all() {
+                                                option {
+                                                    key: "{preset.label()}",
+                                                    value: "{preset.label()}",
+                                                    selected: *preset == convert_preset(),
+                                                    "{preset.label()}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                    div { style: "margin-top: 16px; display: flex; align-items: center; gap: 12px;",
+                                        button {
+                                            class: "btn-primary",
+                                            disabled: !has_current_file,
+                                            onclick: move |_| on_start_convert.call(convert_preset()),
+                                            "{tr(language(), \"tools_modal.convert_button\")}"
+                                        }
+                                        if !convert_status.is_empty() {
+                                            span { style: "font-size: 12px; color: var(--text-muted);", "{convert_status}" }
                                         }
                                     }
                                 }
@@ -309,6 +364,24 @@ pub fn ToolsModal(
                                         1,
                                     )
                                 });
+                                let stable_btn_class = if update_channel == UpdateChannel::Stable {
+                                    "btn-icon active"
+                                } else {
+                                    "btn-icon"
+                                };
+                                let beta_btn_class = if update_channel == UpdateChannel::Beta {
+                                    "btn-icon active"
+                                } else {
+                                    "btn-icon"
+                                };
+                                let update_notes = update_info
+                                    .as_ref()
+                                    .map(|i| i.notes.clone())
+                                    .unwrap_or_default();
+                                let update_has_download = update_info
+                                    .as_ref()
+                                    .map(|i| !i.download_url.is_empty())
+                                    .unwrap_or(false);
                                 rsx! {
                                     div { style: "padding: 4px;",
                                         h4 { class: "section-title", "{tr(language(), \"tools_modal.remote_section_title\")}" }
@@ -348,6 +421,67 @@ pub fn ToolsModal(
                                                 onchange: move |e| on_toggle_metrics.call(e.value() == "true")
                                             }
                                             span { "{tr(language(), \"tools_modal.metrics_toggle\")}" }
+                                        }
+
+                                        h4 { class: "section-title", style: "margin-top: 24px;", "{tr(language(), \"tools_modal.updates_section_title\")}" }
+                                        label { style: "display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 10px;",
+                                            input {
+                                                r#type: "checkbox",
+                                                checked: "{auto_check_updates}",
+                                                onchange: move |e| on_toggle_auto_check_updates.call(e.value() == "true")
+                                            }
+                                            span { "{tr(language(), \"tools_modal.auto_check_updates_toggle\")}" }
+                                        }
+                                        div { class: "slider-row",
+                                            span { "{tr(language(), \"tools_modal.update_channel_label\")}" }
+                                            div { style: "display: flex; gap: 8px;",
+                                                button {
+                                                    class: "{stable_btn_class}",
+                                                    style: "border: 1px solid var(--border-color);",
+                                                    onclick: move |_| on_change_update_channel.call(UpdateChannel::Stable),
+                                                    "Stable"
+                                                }
+                                                button {
+                                                    class: "{beta_btn_class}",
+                                                    style: "border: 1px solid var(--border-color);",
+                                                    onclick: move |_| on_change_update_channel.call(UpdateChannel::Beta),
+                                                    "Beta"
+                                                }
+                                            }
+                                        }
+                                        div { class: "slider-row",
+                                            span { "{tr(language(), \"tools_modal.update_manifest_url_stable_label\")}" }
+                                            input {
+                                                class: "select-input",
+                                                r#type: "text",
+                                                placeholder: "https://.../stable.json",
+                                                value: "{update_manifest_url_stable}",
+                                                oninput: move |e| on_change_manifest_url.call((UpdateChannel::Stable, e.value())),
+                                            }
+                                        }
+                                        div { class: "slider-row",
+                                            span { "{tr(language(), \"tools_modal.update_manifest_url_beta_label\")}" }
+                                            input {
+                                                class: "select-input",
+                                                r#type: "text",
+                                                placeholder: "https://.../beta.json",
+                                                value: "{update_manifest_url_beta}",
+                                                oninput: move |e| on_change_manifest_url.call((UpdateChannel::Beta, e.value())),
+                                            }
+                                        }
+                                        div { style: "margin-top: 12px; display: flex; align-items: center; gap: 12px;",
+                                            button { class: "btn-primary", onclick: move |_| on_check_updates.call(()), "{tr(language(), \"tools_modal.check_updates_button\")}" }
+                                            if !update_status.is_empty() {
+                                                span { style: "font-size: 12px; color: var(--text-muted);", "{update_status}" }
+                                            }
+                                        }
+                                        if update_has_download {
+                                            div { style: "margin-top: 10px;",
+                                                if !update_notes.is_empty() {
+                                                    p { style: "font-size: 12px; color: var(--text-muted); margin-bottom: 8px;", "{update_notes}" }
+                                                }
+                                                button { class: "btn-icon", style: "border: 1px solid var(--border-color);", onclick: move |_| on_install_update.call(()), "{tr(language(), \"tools_modal.update_install_button\")}" }
+                                            }
                                         }
                                     }
                                 }

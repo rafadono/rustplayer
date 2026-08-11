@@ -12,6 +12,7 @@ use rplayer::ab_repeat::AbRepeat;
 use rplayer::bookmarks::Bookmark;
 use rplayer::chapters::Chapter;
 use rplayer::config::Config as AppConfig;
+use rplayer::converter::{ConvertJob, ConvertPreset, ConvertStatus};
 use rplayer::equalizer::Equalizer;
 use rplayer::history::History;
 use rplayer::i18n::{tr, Language};
@@ -24,9 +25,11 @@ use rplayer::player::{MediaTrack, Player, TrackKind};
 use rplayer::playlist::{Playlist, Track};
 use rplayer::remote::{RemoteCommand, RemoteServer};
 use rplayer::sleep_timer::{SleepAction, SleepTimer};
+use rplayer::streaming;
 use rplayer::theme_manager::{ThemeColors, ThemePreset};
 use rplayer::thumbnail::ThumbnailCache;
 use rplayer::trim::{self, TrimJob, TrimStatus};
+use rplayer::updater::{self, UpdateChannel, UpdateInfo};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -135,9 +138,25 @@ fn App() -> Element {
     let mut gamma = use_signal(|| initial_config.image_controls.gamma);
     let mut audio_delay = use_signal(|| initial_config.audio_delay);
     let mut sub_delay = use_signal(|| initial_config.sub_delay);
-    let mut karaoke_enabled = use_signal(|| false);
-    let mut karaoke_pitch = use_signal(|| 0.0f64);
+    let mut karaoke_enabled = use_signal(|| initial_config.karaoke_enabled);
+    let mut karaoke_pitch = use_signal(|| initial_config.karaoke_pitch);
     let mut bookmarks = use_signal(Vec::<Bookmark>::new);
+
+    // Convert (tools/converter.rs)
+    let mut convert_job = use_signal(|| None::<ConvertJob>);
+    let mut convert_status = use_signal(String::new);
+
+    // Open URL / streams (services/streaming.rs)
+    let mut show_open_url_modal = use_signal(|| false);
+    let mut open_url_error = use_signal(String::new);
+
+    // Update checker (services/updater.rs)
+    let mut update_status = use_signal(String::new);
+    let mut update_info = use_signal(|| None::<UpdateInfo>);
+    let mut update_rx =
+        use_signal(|| None::<crossbeam_channel::Receiver<Result<UpdateInfo, String>>>);
+    let mut install_update_rx =
+        use_signal(|| None::<crossbeam_channel::Receiver<Result<(), String>>>);
 
     // Live player state (synced from Player.state by the polling coroutine below)
     let mut audio_tracks = use_signal(Vec::<TrackItem>::new);
@@ -183,8 +202,16 @@ fn App() -> Element {
             p.apply_image_controls(&initial_config.image_controls);
             let _ = p.set_audio_delay(initial_config.audio_delay);
             let _ = p.set_sub_delay(initial_config.sub_delay);
-            if initial_config.equalizer.enabled {
-                p.set_audio_filters(&initial_config.equalizer, initial_config.loudnorm);
+            if initial_config.equalizer.enabled
+                || initial_config.karaoke_enabled
+                || initial_config.karaoke_pitch.abs() > 0.01
+            {
+                p.set_audio_filters(
+                    &initial_config.equalizer,
+                    initial_config.loudnorm,
+                    initial_config.karaoke_enabled,
+                    initial_config.karaoke_pitch,
+                );
             }
             Some(Arc::new(Mutex::new(p)))
         } else {
@@ -283,6 +310,8 @@ fn App() -> Element {
     let mut drop_file_fn = do_load_file.clone();
     #[allow(clippy::clone_on_copy)]
     let mut remote_nav_fn = do_load_file.clone();
+    #[allow(clippy::clone_on_copy)]
+    let mut open_url_fn = do_load_file.clone();
 
     // ── Background polling: syncs Player.state -> UI signals, and drains
     // background job channels (subtitle search, trim, Last.fm login, remote
@@ -424,6 +453,65 @@ fn App() -> Element {
                 }
             }
 
+            if let Some(job) = convert_job.read().as_ref() {
+                for status in job.status_rx.try_iter().collect::<Vec<_>>() {
+                    match status {
+                        ConvertStatus::Done(path) => {
+                            convert_status.set(tr(language(), "tools_modal.convert_done").replacen(
+                                "{}",
+                                &path.display().to_string(),
+                                1,
+                            ))
+                        }
+                        ConvertStatus::Error(e) => convert_status
+                            .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
+                    }
+                }
+            }
+
+            let update_result = update_rx.read().as_ref().and_then(|rx| rx.try_recv().ok());
+            if let Some(result) = update_result {
+                update_rx.set(None);
+                match result {
+                    Ok(info) => {
+                        update_status.set(if info.download_url.is_empty() {
+                            tr(language(), "tools_modal.update_up_to_date").replacen(
+                                "{}",
+                                &info.version,
+                                1,
+                            )
+                        } else {
+                            tr(language(), "tools_modal.update_available").replacen(
+                                "{}",
+                                &info.version,
+                                1,
+                            )
+                        });
+                        update_info.set(Some(info));
+                    }
+                    Err(e) => {
+                        update_status
+                            .set(tr(language(), "tools_modal.update_error").replacen("{}", &e, 1));
+                        update_info.set(None);
+                    }
+                }
+            }
+
+            let install_result = install_update_rx
+                .read()
+                .as_ref()
+                .and_then(|rx| rx.try_recv().ok());
+            if let Some(result) = install_result {
+                install_update_rx.set(None);
+                match result {
+                    Ok(()) => update_status
+                        .set(tr(language(), "tools_modal.update_installed").to_string()),
+                    Err(e) => update_status.set(
+                        tr(language(), "tools_modal.update_install_error").replacen("{}", &e, 1),
+                    ),
+                }
+            }
+
             let login_result = lastfm_login_rx
                 .read()
                 .as_ref()
@@ -546,6 +634,10 @@ fn App() -> Element {
                     config.read().save();
                 },
                 on_open_file: open_file_dialog,
+                on_open_url_modal: move |_| {
+                    open_url_error.set(String::new());
+                    show_open_url_modal.set(true);
+                },
                 on_open_audio_modal: move |_| show_audio_modal.set(true),
                 on_open_video_modal: move |_| show_video_modal.set(true),
                 on_open_tools_modal: move |_| show_tools_modal.set(true),
@@ -718,7 +810,7 @@ fn App() -> Element {
                         let eq_snapshot = config.read().equalizer.clone();
                         let loudnorm = config.read().loudnorm;
                         if let Some(ref p_arc) = *player_ref.read() {
-                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, loudnorm); }
+                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, loudnorm, karaoke_enabled(), karaoke_pitch()); }
                         }
                         config.read().save();
                     },
@@ -728,7 +820,7 @@ fn App() -> Element {
                         let eq_snapshot = config.read().equalizer.clone();
                         let loudnorm = config.read().loudnorm;
                         if let Some(ref p_arc) = *player_ref.read() {
-                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, loudnorm); }
+                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, loudnorm, karaoke_enabled(), karaoke_pitch()); }
                         }
                         config.read().save();
                     },
@@ -749,7 +841,7 @@ fn App() -> Element {
                         let loudnorm = config.read().loudnorm;
                         config.write().equalizer = eq.clone();
                         if let Some(ref p_arc) = *player_ref.read() {
-                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq, loudnorm); }
+                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq, loudnorm, karaoke_enabled(), karaoke_pitch()); }
                         }
                         config.read().save();
                     },
@@ -773,8 +865,26 @@ fn App() -> Element {
 
                     karaoke_enabled: karaoke_enabled(),
                     karaoke_pitch: karaoke_pitch(),
-                    on_toggle_karaoke: move |en| karaoke_enabled.set(en),
-                    on_change_pitch: move |p| karaoke_pitch.set(p),
+                    on_toggle_karaoke: move |en: bool| {
+                        karaoke_enabled.set(en);
+                        config.write().karaoke_enabled = en;
+                        let eq_snapshot = config.read().equalizer.clone();
+                        let loudnorm = config.read().loudnorm;
+                        if let Some(ref p_arc) = *player_ref.read() {
+                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, loudnorm, en, karaoke_pitch()); }
+                        }
+                        config.read().save();
+                    },
+                    on_change_pitch: move |pitch: f64| {
+                        karaoke_pitch.set(pitch);
+                        config.write().karaoke_pitch = pitch;
+                        let eq_snapshot = config.read().equalizer.clone();
+                        let loudnorm = config.read().loudnorm;
+                        if let Some(ref p_arc) = *player_ref.read() {
+                            if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, loudnorm, karaoke_enabled(), pitch); }
+                        }
+                        config.read().save();
+                    },
 
                     lastfm_connected: lastfm_config.read().enabled,
                     lastfm_username: lastfm_config.read().username.clone(),
@@ -911,6 +1021,21 @@ fn App() -> Element {
                 }
             }
 
+            if show_open_url_modal() {
+                OpenUrlModal {
+                    on_close: move |_| show_open_url_modal.set(false),
+                    error: open_url_error(),
+                    on_open: move |url: String| {
+                        if streaming::is_valid_url(&url) {
+                            open_url_fn(PathBuf::from(url));
+                            show_open_url_modal.set(false);
+                        } else {
+                            open_url_error.set(tr(language(), "open_url_modal.invalid_url").to_string());
+                        }
+                    },
+                }
+            }
+
             /* 3. Modal de Herramientas y Ajustes */
             if show_tools_modal() {
                 ToolsModal {
@@ -948,6 +1073,22 @@ fn App() -> Element {
                         }
                     },
                     trim_status: trim_status(),
+
+                    on_start_convert: move |preset: ConvertPreset| {
+                        if let Some(path) = playlist.read().current.and_then(|i| playlist.read().tracks.get(i).cloned()).map(|t| t.path) {
+                            let output = ConvertJob::default_output(&path, &preset);
+                            let job = ConvertJob::start(&path, output, &preset);
+                            convert_status.set(if job.is_some() {
+                                tr(language(), "tools_modal.convert_processing").to_string()
+                            } else {
+                                tr(language(), "tools_modal.convert_ffmpeg_not_found").to_string()
+                            });
+                            convert_job.set(job);
+                        } else {
+                            convert_status.set(tr(language(), "tools_modal.convert_no_file").to_string());
+                        }
+                    },
+                    convert_status: convert_status(),
 
                     filename: current_title(),
                     media_info: media_info_sig(),
@@ -1021,6 +1162,58 @@ fn App() -> Element {
                     },
                     on_cancel_sleep_timer: move |_| {
                         sleep_timer_sig.write().cancel();
+                    },
+
+                    update_channel: config.read().update_channel,
+                    on_change_update_channel: move |ch: UpdateChannel| {
+                        config.write().update_channel = ch;
+                        config.read().save();
+                    },
+                    auto_check_updates: config.read().auto_check_updates,
+                    on_toggle_auto_check_updates: move |v: bool| {
+                        config.write().auto_check_updates = v;
+                        config.read().save();
+                    },
+                    update_manifest_url_stable: config.read().update_manifest_url_stable.clone(),
+                    update_manifest_url_beta: config.read().update_manifest_url_beta.clone(),
+                    on_change_manifest_url: move |(ch, url): (UpdateChannel, String)| {
+                        match ch {
+                            UpdateChannel::Stable => config.write().update_manifest_url_stable = url,
+                            UpdateChannel::Beta => config.write().update_manifest_url_beta = url,
+                        }
+                        config.read().save();
+                    },
+                    update_status: update_status(),
+                    update_info: update_info(),
+                    on_check_updates: move |_| {
+                        let channel = config.read().update_channel;
+                        let manifest_url = match channel {
+                            UpdateChannel::Stable => config.read().update_manifest_url_stable.clone(),
+                            UpdateChannel::Beta => config.read().update_manifest_url_beta.clone(),
+                        };
+                        update_status.set(tr(language(), "tools_modal.update_checking").to_string());
+                        let (tx, rx) = crossbeam_channel::bounded(1);
+                        thread::spawn(move || {
+                            let _ = tx.send(updater::check_for_updates(channel, &manifest_url));
+                        });
+                        update_rx.set(Some(rx));
+                    },
+                    on_install_update: move |_| {
+                        if let Some(info) = update_info() {
+                            if info.download_url.is_empty() {
+                                return;
+                            }
+                            update_status.set(tr(language(), "tools_modal.update_installing").to_string());
+                            let download_url = info.download_url.clone();
+                            let (tx, rx) = crossbeam_channel::bounded(1);
+                            thread::spawn(move || {
+                                let result = std::env::current_exe()
+                                    .map_err(|e| e.to_string())
+                                    .and_then(|exe| updater::install_update_with_rollback(&download_url, &exe));
+                                let _ = tx.send(result);
+                            });
+                            install_update_rx.set(Some(rx));
+                        }
                     },
                 }
             }

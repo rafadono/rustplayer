@@ -6,6 +6,7 @@ pub fn HeaderBar(
     is_dark_mode: bool,
     on_toggle_theme: EventHandler<()>,
     on_open_file: EventHandler<()>,
+    on_open_url_modal: EventHandler<()>,
     on_open_audio_modal: EventHandler<()>,
     on_open_video_modal: EventHandler<()>,
     on_open_tools_modal: EventHandler<()>,
@@ -32,6 +33,13 @@ pub fn HeaderBar(
                         path { d: "M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" }
                     }
                     "{tr(language(), \"header.open_button\")}"
+                }
+
+                button { class: "btn-icon", onclick: move |_| on_open_url_modal.call(()), title: "{tr(language(), \"header.open_url_tooltip\")}",
+                    svg { width: "15", height: "15", view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "2", stroke_linecap: "round", stroke_linejoin: "round",
+                        path { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" }
+                        path { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" }
+                    }
                 }
 
                 button { class: "btn-icon", onclick: move |_| on_open_audio_modal.call(()), title: "{tr(language(), \"header.audio_tooltip\")}",

@@ -78,3 +78,58 @@ pub const USAGE_HINT: &str =
     "Para karaoke: coloca el archivo .cdg junto al .mp3 con el mismo nombre.\n\
      Ejemplo: 'cancion.mp3' + 'cancion.cdg'\n\
      RPlayer los reproducirá automáticamente en sincronía.";
+
+/// Builds the mpv `af` filter fragment for vocal suppression and pitch shift.
+/// Returns an empty string when both are inactive.
+///
+/// Vocal suppression uses phase-cancellation between channels (removes audio
+/// mixed dead-center, which is where most studio vocal tracks live). Pitch
+/// shift uses the asetrate/atempo trick (resample to bend pitch, then
+/// time-stretch back to the original tempo) so it works with a stock ffmpeg
+/// build, without depending on librubberband being compiled into it.
+pub fn to_mpv_af_chain(vocal_suppression: bool, pitch_semitones: f64) -> String {
+    let mut chain: Vec<String> = Vec::new();
+
+    if vocal_suppression {
+        chain.push("pan=stereo|c0=c0-c1|c1=c1-c0".to_string());
+    }
+
+    if pitch_semitones.abs() > 0.01 {
+        let ratio = 2f64.powf(pitch_semitones.clamp(-12.0, 12.0) / 12.0);
+        chain.push(format!(
+            "asetrate=48000*{ratio:.6},aresample=48000,atempo={:.6}",
+            1.0 / ratio
+        ));
+    }
+
+    chain.join(",")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_when_both_inactive() {
+        assert_eq!(to_mpv_af_chain(false, 0.0), "");
+    }
+
+    #[test]
+    fn vocal_suppression_only() {
+        assert_eq!(to_mpv_af_chain(true, 0.0), "pan=stereo|c0=c0-c1|c1=c1-c0");
+    }
+
+    #[test]
+    fn pitch_shift_only_contains_expected_filters() {
+        let chain = to_mpv_af_chain(false, 6.0);
+        assert!(chain.contains("asetrate=48000*"));
+        assert!(chain.contains("aresample=48000"));
+        assert!(chain.contains("atempo="));
+    }
+
+    #[test]
+    fn combines_both_filters_with_comma() {
+        let chain = to_mpv_af_chain(true, -3.0);
+        assert!(chain.starts_with("pan=stereo|c0=c0-c1|c1=c1-c0,asetrate="));
+    }
+}

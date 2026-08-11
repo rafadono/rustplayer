@@ -331,6 +331,40 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "video.metrics_hwdec_on" => "HW decode: activo",
             "video.metrics_hwdec_off" => "HW decode: inactivo",
             "video.metrics_buffer" => "Buffer: {}s",
+
+            // Open URL / streams
+            "header.open_url_tooltip" => "Abrir URL / Stream",
+            "open_url_modal.title" => "Abrir URL o Stream",
+            "open_url_modal.placeholder" => "https://... o rtmp://...",
+            "open_url_modal.play_button" => "▶ Reproducir",
+            "open_url_modal.invalid_url" => "URL inválida. Debe empezar con http://, https://, rtmp://, rtsp:// o magnet:",
+            "open_url_modal.quick_radio_title" => "Radios rápidas",
+
+            // Convert tab (tools/converter.rs)
+            "tools_modal.tab_convert" => "🔄 Convertir",
+            "tools_modal.convert_title" => "Convertir formato (ffmpeg)",
+            "tools_modal.convert_preset_label" => "Formato de salida",
+            "tools_modal.convert_button" => "Convertir",
+            "tools_modal.convert_processing" => "Convirtiendo...",
+            "tools_modal.convert_done" => "Listo: {}",
+            "tools_modal.convert_ffmpeg_not_found" => "ffmpeg no encontrado en el PATH",
+            "tools_modal.convert_no_file" => "Abre un archivo primero",
+
+            // Update checker (services/updater.rs)
+            "tools_modal.updates_section_title" => "🔄 Actualizaciones",
+            "tools_modal.update_channel_label" => "Canal de actualización",
+            "tools_modal.auto_check_updates_toggle" => "Buscar actualizaciones automáticamente al iniciar",
+            "tools_modal.update_manifest_url_stable_label" => "URL de manifiesto (Stable)",
+            "tools_modal.update_manifest_url_beta_label" => "URL de manifiesto (Beta)",
+            "tools_modal.check_updates_button" => "Buscar actualizaciones",
+            "tools_modal.update_checking" => "Buscando...",
+            "tools_modal.update_up_to_date" => "Ya tienes la última versión ({})",
+            "tools_modal.update_available" => "Nueva versión disponible: {}",
+            "tools_modal.update_error" => "Error al buscar actualizaciones: {}",
+            "tools_modal.update_install_button" => "⬇ Descargar e instalar",
+            "tools_modal.update_installing" => "Instalando...",
+            "tools_modal.update_installed" => "Instalado. Reinicia la aplicación.",
+            "tools_modal.update_install_error" => "Error al instalar: {}",
             _ => key,
         },
         Language::En => match key {
@@ -642,6 +676,40 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "video.metrics_hwdec_on" => "HW decode: on",
             "video.metrics_hwdec_off" => "HW decode: off",
             "video.metrics_buffer" => "Buffer: {}s",
+
+            // Open URL / streams
+            "header.open_url_tooltip" => "Open URL / Stream",
+            "open_url_modal.title" => "Open URL or Stream",
+            "open_url_modal.placeholder" => "https://... or rtmp://...",
+            "open_url_modal.play_button" => "▶ Play",
+            "open_url_modal.invalid_url" => "Invalid URL. Must start with http://, https://, rtmp://, rtsp:// or magnet:",
+            "open_url_modal.quick_radio_title" => "Quick radio stations",
+
+            // Convert tab (tools/converter.rs)
+            "tools_modal.tab_convert" => "🔄 Convert",
+            "tools_modal.convert_title" => "Convert format (ffmpeg)",
+            "tools_modal.convert_preset_label" => "Output format",
+            "tools_modal.convert_button" => "Convert",
+            "tools_modal.convert_processing" => "Converting...",
+            "tools_modal.convert_done" => "Done: {}",
+            "tools_modal.convert_ffmpeg_not_found" => "ffmpeg not found in PATH",
+            "tools_modal.convert_no_file" => "Open a file first",
+
+            // Update checker (services/updater.rs)
+            "tools_modal.updates_section_title" => "🔄 Updates",
+            "tools_modal.update_channel_label" => "Update channel",
+            "tools_modal.auto_check_updates_toggle" => "Automatically check for updates on startup",
+            "tools_modal.update_manifest_url_stable_label" => "Manifest URL (Stable)",
+            "tools_modal.update_manifest_url_beta_label" => "Manifest URL (Beta)",
+            "tools_modal.check_updates_button" => "Check for updates",
+            "tools_modal.update_checking" => "Checking...",
+            "tools_modal.update_up_to_date" => "You're up to date ({})",
+            "tools_modal.update_available" => "New version available: {}",
+            "tools_modal.update_error" => "Update check failed: {}",
+            "tools_modal.update_install_button" => "⬇ Download & install",
+            "tools_modal.update_installing" => "Installing...",
+            "tools_modal.update_installed" => "Installed. Restart the app.",
+            "tools_modal.update_install_error" => "Install failed: {}",
             _ => key,
         },
     }

@@ -68,6 +68,10 @@ pub struct Config {
 
     // Features
     pub equalizer: Equalizer,
+    #[serde(default)]
+    pub karaoke_enabled: bool,
+    #[serde(default)]
+    pub karaoke_pitch: f64,
     pub remote_enabled: bool,
     pub remote_port: u16,
     pub lastfm: LastFmConfig,
@@ -81,6 +85,10 @@ pub struct Config {
     pub update_channel: UpdateChannel,
     #[serde(default = "default_auto_check_updates")]
     pub auto_check_updates: bool,
+    #[serde(default)]
+    pub update_manifest_url_stable: String,
+    #[serde(default)]
+    pub update_manifest_url_beta: String,
     #[serde(default = "default_language")]
     pub language: Language,
     #[serde(default)]
@@ -157,6 +165,8 @@ impl Default for Config {
             last_directory: None,
             theme: ThemeColors::default(),
             equalizer: Equalizer::default(),
+            karaoke_enabled: false,
+            karaoke_pitch: 0.0,
             remote_enabled: false,
             remote_port: 7890,
             lastfm: LastFmConfig::default(),
@@ -165,6 +175,8 @@ impl Default for Config {
             metrics_overlay_font_size: default_metrics_overlay_font_size(),
             update_channel: UpdateChannel::Stable,
             auto_check_updates: true,
+            update_manifest_url_stable: String::new(),
+            update_manifest_url_beta: String::new(),
             language: Language::Es,
             bug_report_url: String::new(),
             sub_font_size: 40,

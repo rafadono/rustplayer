@@ -26,17 +26,20 @@ sudo apt install -y build-essential libmpv-dev pkg-config libssl-dev \
 
 ### Arch Linux / Manjaro / EndeavourOS
 ```bash
-sudo pacman -S --needed base-devel mpv ffmpeg yt-dlp pkgconf openssl
+sudo pacman -S --needed base-devel mpv ffmpeg yt-dlp pkgconf openssl webkit2gtk-4.1 gtk3 xdotool
 ```
 
 ### openSUSE (Tumbleweed / Leap)
+`xdotool`/`libxdo` isn't in the default repos on openSUSE — add the `X11:Utilities` repo first:
 ```bash
-sudo zypper install -y gcc pkg-config mpv-devel libopenssl-devel ffmpeg yt-dlp
+sudo zypper addrepo https://download.opensuse.org/repositories/X11:Utilities/openSUSE_Tumbleweed/X11:Utilities.repo
+sudo zypper refresh
+sudo zypper install -y gcc pkg-config mpv-devel libopenssl-devel ffmpeg yt-dlp webkit2gtk3-devel gtk3-devel xdotool-devel
 ```
 
 ### Alpine Linux
 ```bash
-sudo apk add build-base pkgconf mpv-dev openssl-dev ffmpeg yt-dlp
+sudo apk add build-base pkgconf mpv-dev openssl-dev ffmpeg yt-dlp webkit2gtk-4.1-dev gtk+3.0-dev xdotool-dev
 ```
 
 ---

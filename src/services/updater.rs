@@ -18,7 +18,7 @@ impl UpdateChannel {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 pub struct UpdateInfo {
     pub version: String,
     pub download_url: String,
@@ -27,19 +27,29 @@ pub struct UpdateInfo {
     pub channel: String,
 }
 
-pub fn check_for_updates(_channel: UpdateChannel) -> Result<UpdateInfo, String> {
-    let url = match _channel {
-        UpdateChannel::Stable => "https://example.com/rplayer/stable.json",
-        UpdateChannel::Beta => "https://example.com/rplayer/beta.json",
-    };
-    let resp = ureq::get(url)
+/// Checks `manifest_url` for update info. The URL is user-configured per
+/// channel (Settings tab) rather than hardcoded, since this project does not
+/// publish a release manifest itself — bring your own (e.g. a JSON file
+/// served from your own release infrastructure) with the shape of
+/// `UpdateInfo`.
+pub fn check_for_updates(channel: UpdateChannel, manifest_url: &str) -> Result<UpdateInfo, String> {
+    let manifest_url = manifest_url.trim();
+    if manifest_url.is_empty() {
+        return Err("no hay URL de manifiesto configurada para este canal".to_string());
+    }
+    let resp = ureq::get(manifest_url)
         .timeout(std::time::Duration::from_secs(6))
         .call()
         .map_err(|e| format!("update check failed: {}", e))?;
     let text = resp
         .into_string()
         .map_err(|e| format!("invalid update response: {}", e))?;
-    serde_json::from_str::<UpdateInfo>(&text).map_err(|e| format!("invalid update json: {}", e))
+    let mut info: UpdateInfo =
+        serde_json::from_str(&text).map_err(|e| format!("invalid update json: {}", e))?;
+    if info.channel.is_empty() {
+        info.channel = channel.label().to_string();
+    }
+    Ok(info)
 }
 
 pub fn is_newer(current: &str, latest: &str) -> bool {
