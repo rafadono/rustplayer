@@ -312,6 +312,8 @@ fn App() -> Element {
     let mut remote_nav_fn = do_load_file.clone();
     #[allow(clippy::clone_on_copy)]
     let mut open_url_fn = do_load_file.clone();
+    #[allow(clippy::clone_on_copy)]
+    let mut resume_history_fn = do_load_file.clone();
 
     // ── Background polling: syncs Player.state -> UI signals, and drains
     // background job channels (subtitle search, trim, Last.fm login, remote
@@ -1094,7 +1096,7 @@ fn App() -> Element {
                     media_info: media_info_sig(),
 
                     history_entries: history.read().all_entries(),
-                    on_resume_history: move |path: PathBuf| playlist_load_fn(path),
+                    on_resume_history: move |path: PathBuf| resume_history_fn(path),
                     on_remove_history: move |path: PathBuf| {
                         history.write().remove(&path);
                         history.read().save();
