@@ -5,7 +5,7 @@ edition = "2021"
 build = "build.rs"
 description = "Reproductor de video y audio libre"
 license = "MIT"
-rust-version = "1.75"
+rust-version = "1.82"
 
 [[bin]]
 name = "rplayer"
@@ -13,7 +13,7 @@ path = "src/main.rs"
 
 [dependencies]
 # UI
-dioxus = { version = "0.5", features = ["desktop"] }
+dioxus = { version = "0.7.10", features = ["desktop"] }
 
 # Media backend
 libmpv2 = { version = "5", features = ["render"] }
@@ -22,8 +22,11 @@ libmpv2-sys = "4.0.1"
 # GL proc-address
 libloading = "0.8"
 
-# Native file dialog
-rfd = { version = "0.14", default-features = false, features = ["xdg-portal"] }
+# Native file dialog. GTK3 backend (not xdg-portal): we already require GTK3
+# directly for X11 video embedding, we don't run sandboxed (no Flatpak), and
+# xdg-portal's ashpd/zbus chain needs a runtime feature (tokio/async-std) that
+# nothing else in the tree provides after the Dioxus 0.7 (wry 0.53) bump.
+rfd = { version = "0.14", default-features = false, features = ["gtk3"] }
 
 # Open URLs in browser
 open = "5"

@@ -2,7 +2,7 @@
 
 ## Common Requirements
 
-- **Rust** 1.75 or higher (install from https://rustup.rs)
+- **Rust** 1.82 or higher (install from https://rustup.rs)
 - **Cargo** (included with Rust)
 
 ---

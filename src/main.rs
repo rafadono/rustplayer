@@ -30,7 +30,7 @@ use rplayer::theme_manager::{ThemeColors, ThemePreset};
 use rplayer::thumbnail::ThumbnailCache;
 use rplayer::trim::{self, TrimJob, TrimStatus};
 use rplayer::updater::{self, UpdateChannel, UpdateInfo};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
@@ -125,7 +125,7 @@ fn App() -> Element {
             .equalizer
             .peq_filters
             .iter()
-            .map(|f| f.gain_db as f64)
+            .map(|f| f64::from(f.gain_db))
             .collect();
         v.resize(10, 0.0);
         v
@@ -309,7 +309,7 @@ fn App() -> Element {
     #[allow(clippy::clone_on_copy)]
     let mut drop_file_fn = do_load_file.clone();
     #[allow(clippy::clone_on_copy)]
-    let mut remote_nav_fn = do_load_file.clone();
+    let remote_nav_fn = do_load_file.clone();
     #[allow(clippy::clone_on_copy)]
     let mut open_url_fn = do_load_file.clone();
     #[allow(clippy::clone_on_copy)]
@@ -319,288 +319,299 @@ fn App() -> Element {
     // background job channels (subtitle search, trim, Last.fm login, remote
     // control, sleep timer). Runs every ~200ms via a coroutine woken up by a
     // plain OS thread (Coroutine::tx() is Send, confirmed against the
-    // installed dioxus-hooks 0.5.6 source).
-    let poll_tx = use_coroutine(move |mut rx: UnboundedReceiver<()>| async move {
-        let mut last_title = String::new();
-        let mut last_paused_for_history = true;
-        let mut thumbs_generated_for: Option<PathBuf> = None;
-        let mut scrobble = ScrobbleTracker::new();
+    // installed dioxus-hooks 0.7.10 source).
+    //
+    // use_coroutine's generator closure is bound as `FnMut(..) -> F + 'static`
+    // (dioxus-hooks 0.7.10), so remote_nav_fn can't be moved into the `async
+    // move` body directly on non-Copy platforms (Linux, where do_load_file
+    // captures the Rc-backed window_for_embed) -- it has to be re-cloned on
+    // every invocation of the outer closure instead.
+    let poll_tx = use_coroutine(move |mut rx: UnboundedReceiver<()>| {
+        #[allow(clippy::clone_on_copy, clippy::redundant_clone)]
+        let mut remote_nav_fn = remote_nav_fn.clone();
+        async move {
+            let mut last_title = String::new();
+            let mut last_paused_for_history = true;
+            let mut thumbs_generated_for: Option<PathBuf> = None;
+            let mut scrobble = ScrobbleTracker::new();
 
-        while rx.next().await.is_some() {
-            let Some(p_arc) = player_ref.read().clone() else {
-                continue;
-            };
-            let snap = {
-                let Ok(p) = p_arc.lock() else { continue };
-                let s = p.state.lock().unwrap().clone();
-                s
-            };
+            while rx.next().await.is_some() {
+                let Some(p_arc) = player_ref.read().clone() else {
+                    continue;
+                };
+                let snap = {
+                    let Ok(p) = p_arc.lock() else { continue };
+                    let s = p.state.lock().unwrap().clone();
+                    s
+                };
 
-            time_pos.set(snap.position);
-            duration.set(snap.duration);
-            paused.set(snap.paused);
-            playing.set(!snap.paused && has_file());
-            volume.set(snap.volume);
-            muted.set(snap.muted);
-            speed.set(snap.speed);
+                time_pos.set(snap.position);
+                duration.set(snap.duration);
+                paused.set(snap.paused);
+                playing.set(!snap.paused && has_file());
+                volume.set(snap.volume);
+                muted.set(snap.muted);
+                speed.set(snap.speed);
 
-            let to_item = |t: &MediaTrack| TrackItem {
-                id: t.id,
-                title: t.title.clone(),
-                lang: t.lang.clone(),
-                track_type: match t.kind {
-                    TrackKind::Audio => "audio".to_string(),
-                    TrackKind::Sub => "sub".to_string(),
-                    TrackKind::Video => "video".to_string(),
-                },
-            };
-            audio_tracks.set(snap.audio_tracks.iter().map(to_item).collect());
-            sub_tracks.set(snap.sub_tracks.iter().map(to_item).collect());
-            current_audio.set(snap.audio_tracks.iter().find(|t| t.selected).map(|t| t.id));
-            current_sub.set(snap.sub_tracks.iter().find(|t| t.selected).map(|t| t.id));
+                let to_item = |t: &MediaTrack| TrackItem {
+                    id: t.id,
+                    title: t.title.clone(),
+                    lang: t.lang.clone(),
+                    track_type: match t.kind {
+                        TrackKind::Audio => "audio".to_string(),
+                        TrackKind::Sub => "sub".to_string(),
+                        TrackKind::Video => "video".to_string(),
+                    },
+                };
+                audio_tracks.set(snap.audio_tracks.iter().map(to_item).collect());
+                sub_tracks.set(snap.sub_tracks.iter().map(to_item).collect());
+                current_audio.set(snap.audio_tracks.iter().find(|t| t.selected).map(|t| t.id));
+                current_sub.set(snap.sub_tracks.iter().find(|t| t.selected).map(|t| t.id));
 
-            chapters.set(snap.chapters.clone());
-            render_fps.set(snap.render_fps);
-            dropped_frames.set(snap.dropped_frames);
-            hwdec_active.set(snap.hwdec_active);
-            buffer_seconds.set(snap.buffer_seconds);
+                chapters.set(snap.chapters.clone());
+                render_fps.set(snap.render_fps);
+                dropped_frames.set(snap.dropped_frames);
+                hwdec_active.set(snap.hwdec_active);
+                buffer_seconds.set(snap.buffer_seconds);
 
-            if let Some(path) = &snap.current_file {
-                history
-                    .write()
-                    .update(path, &snap.title, snap.position, snap.duration);
+                if let Some(path) = &snap.current_file {
+                    history
+                        .write()
+                        .update(path, &snap.title, snap.position, snap.duration);
 
-                if snap.duration > 0.0 && thumbs_generated_for.as_ref() != Some(path) {
-                    thumbs_generated_for = Some(path.clone());
-                    thumb_cache.write().generate(path, snap.duration);
+                    if snap.duration > 0.0 && thumbs_generated_for.as_ref() != Some(path) {
+                        thumbs_generated_for = Some(path.clone());
+                        thumb_cache.write().generate(path, snap.duration);
+                    }
                 }
-            }
 
-            if !snap.title.is_empty() && snap.title != last_title {
-                last_title = snap.title.clone();
-                if let Ok(p) = p_arc.lock() {
-                    media_info_sig.set(p.media_info());
+                if !snap.title.is_empty() && snap.title != last_title {
+                    last_title = snap.title.clone();
+                    if let Ok(p) = p_arc.lock() {
+                        media_info_sig.set(p.media_info());
+                    }
+                    let sk = lastfm_config.read().session_key.clone();
+                    if lastfm_config.read().enabled && !sk.is_empty() {
+                        scrobble.start_track(TrackInfo::from_filename(&snap.title), &sk);
+                    }
+                    // Throttle history disk writes to file-change/pause-toggle
+                    // events instead of every ~200ms tick (Dioxus 0.5 has no
+                    // window-close hook to guarantee a final save otherwise).
+                    history.read().save();
                 }
-                let sk = lastfm_config.read().session_key.clone();
-                if lastfm_config.read().enabled && !sk.is_empty() {
-                    scrobble.start_track(TrackInfo::from_filename(&snap.title), &sk);
+                if snap.paused != last_paused_for_history {
+                    last_paused_for_history = snap.paused;
+                    history.read().save();
                 }
-                // Throttle history disk writes to file-change/pause-toggle
-                // events instead of every ~200ms tick (Dioxus 0.5 has no
-                // window-close hook to guarantee a final save otherwise).
-                history.read().save();
-            }
-            if snap.paused != last_paused_for_history {
-                last_paused_for_history = snap.paused;
-                history.read().save();
-            }
 
-            if lastfm_config.read().enabled && !snap.paused {
-                let sk = lastfm_config.read().session_key.clone();
-                if !sk.is_empty() {
-                    scrobble.tick(snap.position, snap.duration, &sk);
+                if lastfm_config.read().enabled && !snap.paused {
+                    let sk = lastfm_config.read().session_key.clone();
+                    if !sk.is_empty() {
+                        scrobble.tick(snap.position, snap.duration, &sk);
+                    }
                 }
-            }
 
-            if let Some(job) = sub_search.read().as_ref() {
-                for status in job.rx.try_iter().collect::<Vec<_>>() {
-                    match status {
-                        SubSearchStatus::Searching => {
-                            sub_search_status.set(tr(language(), "opensub.searching").to_string())
-                        }
-                        SubSearchStatus::Results(r) => {
-                            sub_search_status.set(
-                                tr(language(), "opensub.results_count").replacen(
+                if let Some(job) = sub_search.read().as_ref() {
+                    for status in job.rx.try_iter().collect::<Vec<_>>() {
+                        match status {
+                            SubSearchStatus::Searching => sub_search_status
+                                .set(tr(language(), "opensub.searching").to_string()),
+                            SubSearchStatus::Results(r) => {
+                                sub_search_status.set(
+                                    tr(language(), "opensub.results_count").replacen(
+                                        "{}",
+                                        &r.len().to_string(),
+                                        1,
+                                    ),
+                                );
+                                sub_search_results.set(r);
+                            }
+                            SubSearchStatus::Downloading => sub_search_status
+                                .set(tr(language(), "opensub.downloading").to_string()),
+                            SubSearchStatus::Done(path) => {
+                                sub_search_status.set(tr(language(), "opensub.saved").replacen(
                                     "{}",
-                                    &r.len().to_string(),
+                                    &path.display().to_string(),
                                     1,
-                                ),
-                            );
-                            sub_search_results.set(r);
-                        }
-                        SubSearchStatus::Downloading => {
-                            sub_search_status.set(tr(language(), "opensub.downloading").to_string())
-                        }
-                        SubSearchStatus::Done(path) => {
-                            sub_search_status.set(tr(language(), "opensub.saved").replacen(
-                                "{}",
-                                &path.display().to_string(),
-                                1,
-                            ));
-                            if let Some(p_arc2) = player_ref.read().clone() {
-                                if let Ok(p) = p_arc2.lock() {
-                                    let _ = p.add_sub_file(&path);
+                                ));
+                                if let Some(p_arc2) = player_ref.read().clone() {
+                                    if let Ok(p) = p_arc2.lock() {
+                                        let _ = p.add_sub_file(&path);
+                                    }
                                 }
                             }
+                            SubSearchStatus::Error(e) => sub_search_status
+                                .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
                         }
-                        SubSearchStatus::Error(e) => sub_search_status
-                            .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
                     }
                 }
-            }
 
-            if let Some(job) = trim_job.read().as_ref() {
-                for status in job.status_rx.try_iter().collect::<Vec<_>>() {
-                    match status {
-                        TrimStatus::Done(path) => {
-                            trim_status.set(tr(language(), "trim.done").replacen(
-                                "{}",
-                                &path.display().to_string(),
-                                1,
-                            ))
-                        }
-                        TrimStatus::Error(e) => trim_status
-                            .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
-                    }
-                }
-            }
-
-            if let Some(job) = convert_job.read().as_ref() {
-                for status in job.status_rx.try_iter().collect::<Vec<_>>() {
-                    match status {
-                        ConvertStatus::Done(path) => {
-                            convert_status.set(tr(language(), "tools_modal.convert_done").replacen(
-                                "{}",
-                                &path.display().to_string(),
-                                1,
-                            ))
-                        }
-                        ConvertStatus::Error(e) => convert_status
-                            .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
-                    }
-                }
-            }
-
-            let update_result = update_rx.read().as_ref().and_then(|rx| rx.try_recv().ok());
-            if let Some(result) = update_result {
-                update_rx.set(None);
-                match result {
-                    Ok(info) => {
-                        update_status.set(if info.download_url.is_empty() {
-                            tr(language(), "tools_modal.update_up_to_date").replacen(
-                                "{}",
-                                &info.version,
-                                1,
-                            )
-                        } else {
-                            tr(language(), "tools_modal.update_available").replacen(
-                                "{}",
-                                &info.version,
-                                1,
-                            )
-                        });
-                        update_info.set(Some(info));
-                    }
-                    Err(e) => {
-                        update_status
-                            .set(tr(language(), "tools_modal.update_error").replacen("{}", &e, 1));
-                        update_info.set(None);
-                    }
-                }
-            }
-
-            let install_result = install_update_rx
-                .read()
-                .as_ref()
-                .and_then(|rx| rx.try_recv().ok());
-            if let Some(result) = install_result {
-                install_update_rx.set(None);
-                match result {
-                    Ok(()) => update_status
-                        .set(tr(language(), "tools_modal.update_installed").to_string()),
-                    Err(e) => update_status.set(
-                        tr(language(), "tools_modal.update_install_error").replacen("{}", &e, 1),
-                    ),
-                }
-            }
-
-            let login_result = lastfm_login_rx
-                .read()
-                .as_ref()
-                .and_then(|rx2| rx2.try_recv().ok());
-            if let Some(result) = login_result {
-                lastfm_login_rx.set(None);
-                match result {
-                    Ok(session_key) => {
-                        let username = lastfm_pending_user.read().clone();
-                        let new_cfg = LastFmConfig {
-                            enabled: true,
-                            username,
-                            session_key,
-                        };
-                        lastfm_config.set(new_cfg.clone());
-                        lastfm_status.set(tr(language(), "lastfm.connected_status").to_string());
-                        config.write().lastfm = new_cfg;
-                        config.read().save();
-                    }
-                    Err(e) => lastfm_status
-                        .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
-                }
-            }
-
-            if let Some(server) = remote_server.read().clone() {
-                for cmd in server.drain() {
-                    match cmd {
-                        RemoteCommand::Next => {
-                            let next_path = playlist.read().next().map(|t| t.path.clone());
-                            if let Some(path) = next_path {
-                                remote_nav_fn(path);
+                if let Some(job) = trim_job.read().as_ref() {
+                    for status in job.status_rx.try_iter().collect::<Vec<_>>() {
+                        match status {
+                            TrimStatus::Done(path) => {
+                                trim_status.set(tr(language(), "trim.done").replacen(
+                                    "{}",
+                                    &path.display().to_string(),
+                                    1,
+                                ))
                             }
+                            TrimStatus::Error(e) => trim_status
+                                .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
                         }
-                        RemoteCommand::Prev => {
-                            let prev_path = playlist.read().prev().map(|t| t.path.clone());
-                            if let Some(path) = prev_path {
-                                remote_nav_fn(path);
+                    }
+                }
+
+                if let Some(job) = convert_job.read().as_ref() {
+                    for status in job.status_rx.try_iter().collect::<Vec<_>>() {
+                        match status {
+                            ConvertStatus::Done(path) => convert_status.set(
+                                tr(language(), "tools_modal.convert_done").replacen(
+                                    "{}",
+                                    &path.display().to_string(),
+                                    1,
+                                ),
+                            ),
+                            ConvertStatus::Error(e) => convert_status
+                                .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
+                        }
+                    }
+                }
+
+                let update_result = update_rx.read().as_ref().and_then(|rx| rx.try_recv().ok());
+                if let Some(result) = update_result {
+                    update_rx.set(None);
+                    match result {
+                        Ok(info) => {
+                            update_status.set(if info.download_url.is_empty() {
+                                tr(language(), "tools_modal.update_up_to_date").replacen(
+                                    "{}",
+                                    &info.version,
+                                    1,
+                                )
+                            } else {
+                                tr(language(), "tools_modal.update_available").replacen(
+                                    "{}",
+                                    &info.version,
+                                    1,
+                                )
+                            });
+                            update_info.set(Some(info));
+                        }
+                        Err(e) => {
+                            update_status.set(
+                                tr(language(), "tools_modal.update_error").replacen("{}", &e, 1),
+                            );
+                            update_info.set(None);
+                        }
+                    }
+                }
+
+                let install_result = install_update_rx
+                    .read()
+                    .as_ref()
+                    .and_then(|rx| rx.try_recv().ok());
+                if let Some(result) = install_result {
+                    install_update_rx.set(None);
+                    match result {
+                        Ok(()) => update_status
+                            .set(tr(language(), "tools_modal.update_installed").to_string()),
+                        Err(e) => update_status.set(
+                            tr(language(), "tools_modal.update_install_error")
+                                .replacen("{}", &e, 1),
+                        ),
+                    }
+                }
+
+                let login_result = lastfm_login_rx
+                    .read()
+                    .as_ref()
+                    .and_then(|rx2| rx2.try_recv().ok());
+                if let Some(result) = login_result {
+                    lastfm_login_rx.set(None);
+                    match result {
+                        Ok(session_key) => {
+                            let username = lastfm_pending_user.read().clone();
+                            let new_cfg = LastFmConfig {
+                                enabled: true,
+                                username,
+                                session_key,
+                            };
+                            lastfm_config.set(new_cfg.clone());
+                            lastfm_status
+                                .set(tr(language(), "lastfm.connected_status").to_string());
+                            config.write().lastfm = new_cfg;
+                            config.read().save();
+                        }
+                        Err(e) => lastfm_status
+                            .set(tr(language(), "common.error_prefix").replacen("{}", &e, 1)),
+                    }
+                }
+
+                if let Some(server) = remote_server.read().clone() {
+                    for cmd in server.drain() {
+                        match cmd {
+                            RemoteCommand::Next => {
+                                let next_path = playlist.read().next().map(|t| t.path.clone());
+                                if let Some(path) = next_path {
+                                    remote_nav_fn(path);
+                                }
                             }
-                        }
-                        other => {
-                            if let Some(p_arc2) = player_ref.read().clone() {
-                                if let Ok(p) = p_arc2.lock() {
-                                    match other {
-                                        RemoteCommand::TogglePause => {
-                                            let _ = p.toggle_pause();
+                            RemoteCommand::Prev => {
+                                let prev_path = playlist.read().prev().map(|t| t.path.clone());
+                                if let Some(path) = prev_path {
+                                    remote_nav_fn(path);
+                                }
+                            }
+                            other => {
+                                if let Some(p_arc2) = player_ref.read().clone() {
+                                    if let Ok(p) = p_arc2.lock() {
+                                        match other {
+                                            RemoteCommand::TogglePause => {
+                                                let _ = p.toggle_pause();
+                                            }
+                                            RemoteCommand::Pause => {
+                                                let _ = p.set_paused(true);
+                                            }
+                                            RemoteCommand::Resume => {
+                                                let _ = p.set_paused(false);
+                                            }
+                                            RemoteCommand::Stop => {
+                                                let _ = p.stop();
+                                            }
+                                            RemoteCommand::Seek(t) => {
+                                                let _ = p.seek_absolute(t);
+                                            }
+                                            RemoteCommand::SetVolume(v) => {
+                                                let _ = p.set_volume(v);
+                                            }
+                                            RemoteCommand::Next | RemoteCommand::Prev => {}
                                         }
-                                        RemoteCommand::Pause => {
-                                            let _ = p.set_paused(true);
-                                        }
-                                        RemoteCommand::Resume => {
-                                            let _ = p.set_paused(false);
-                                        }
-                                        RemoteCommand::Stop => {
-                                            let _ = p.stop();
-                                        }
-                                        RemoteCommand::Seek(t) => {
-                                            let _ = p.seek_absolute(t);
-                                        }
-                                        RemoteCommand::SetVolume(v) => {
-                                            let _ = p.set_volume(v);
-                                        }
-                                        RemoteCommand::Next | RemoteCommand::Prev => {}
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            if sleep_timer_sig.write().tick() {
-                let action = sleep_timer_sig.read().action.clone();
-                if let Some(p_arc2) = player_ref.read().clone() {
-                    if let Ok(p) = p_arc2.lock() {
-                        match action {
-                            SleepAction::Pause => {
-                                let _ = p.set_paused(true);
+                if sleep_timer_sig.write().tick() {
+                    let action = sleep_timer_sig.read().action.clone();
+                    if let Some(p_arc2) = player_ref.read().clone() {
+                        if let Ok(p) = p_arc2.lock() {
+                            match action {
+                                SleepAction::Pause => {
+                                    let _ = p.set_paused(true);
+                                }
+                                SleepAction::Stop => {
+                                    let _ = p.stop();
+                                }
+                                SleepAction::Quit => {}
                             }
-                            SleepAction::Stop => {
-                                let _ = p.stop();
-                            }
-                            SleepAction::Quit => {}
                         }
                     }
-                }
-                if action == SleepAction::Quit {
-                    std::process::exit(0);
+                    if action == SleepAction::Quit {
+                        std::process::exit(0);
+                    }
                 }
             }
         }
@@ -836,7 +847,7 @@ fn App() -> Element {
                             "Rock" => Equalizer::preset_rock(),
                             _ => Equalizer::preset_flat(),
                         };
-                        let mut bands: Vec<f64> = eq.peq_filters.iter().map(|f| f.gain_db as f64).collect();
+                        let mut bands: Vec<f64> = eq.peq_filters.iter().map(|f| f64::from(f.gain_db)).collect();
                         bands.resize(10, 0.0);
                         eq_bands.set(bands);
                         eq_enabled.set(eq.enabled);
@@ -955,7 +966,7 @@ fn App() -> Element {
                     sub_search_results: sub_search_results(),
                     on_download_sub: move |result: SubResult| {
                         if let Some(path) = playlist.read().current.and_then(|i| playlist.read().tracks.get(i).cloned()).map(|t| t.path) {
-                            let dest_dir = path.parent().map(|p| p.to_path_buf()).unwrap_or_default();
+                            let dest_dir = path.parent().map(Path::to_path_buf).unwrap_or_default();
                             sub_search_status.set(tr(language(), "opensub.downloading").to_string());
                             sub_search.set(SubSearchJob::download(&result, &dest_dir));
                         }
@@ -1206,7 +1217,7 @@ fn App() -> Element {
                                 return;
                             }
                             update_status.set(tr(language(), "tools_modal.update_installing").to_string());
-                            let download_url = info.download_url.clone();
+                            let download_url = info.download_url;
                             let (tx, rx) = crossbeam_channel::bounded(1);
                             thread::spawn(move || {
                                 let result = std::env::current_exe()

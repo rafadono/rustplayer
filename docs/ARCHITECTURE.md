@@ -60,3 +60,4 @@ src/
 
 - **`services/updater.rs`**: fully wired end-to-end (check, show result, download-and-install-with-rollback), but there's no manifest to point it at — this project doesn't publish a release-manifest JSON anywhere. The Settings tab lets you fill in your own Stable/Beta manifest URL; until one is set, "Check for updates" reports it isn't configured instead of hitting a fake endpoint.
 - **`playback/up_next.rs`** was removed as dead code (unused since the real playlist manager in `storage/playlist.rs` replaced it).
+- **Dioxus 0.7.10 upgrade (from 0.5)**: compiles clean and passes the full test/clippy/fmt suite, but the X11 video-embedding path (`gdkx11`/`WindowExtUnix` in `src/main.rs`, riding on the `tao` 0.26→0.34 bump pulled in transitively) has only been verified by the compiler on Windows — it still needs a manual smoke test on a real Linux desktop session before being considered fully verified.

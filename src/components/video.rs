@@ -33,10 +33,8 @@ pub fn VideoStage(
             class: "video-container",
             ondragover: move |evt: Event<DragData>| evt.stop_propagation(),
             ondrop: move |evt: Event<DragData>| {
-                if let Some(engine) = evt.files() {
-                    for path in engine.files() {
-                        on_drop_file.call(path);
-                    }
+                for file in evt.files() {
+                    on_drop_file.call(file.path().to_string_lossy().to_string());
                 }
             },
             if !has_file {
