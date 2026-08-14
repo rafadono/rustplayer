@@ -26,7 +26,7 @@ libloading = "0.8"
 # directly for X11 video embedding, we don't run sandboxed (no Flatpak), and
 # xdg-portal's ashpd/zbus chain needs a runtime feature (tokio/async-std) that
 # nothing else in the tree provides after the Dioxus 0.7 (wry 0.53) bump.
-rfd = { version = "0.14", default-features = false, features = ["gtk3"] }
+rfd = { version = "0.14", default-features = false, features = ["async-std", "xdg-portal"] }
 
 # Open URLs in browser
 open = "5"
@@ -66,6 +66,8 @@ base64 = "0.22"
 
 # RSS/XML for podcasts
 quick-xml = "0.41"
+tracing-subscriber = "0.3.23"
+tracing = "0.1.44"
 
 [profile.release]
 opt-level = 3

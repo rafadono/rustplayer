@@ -8,8 +8,21 @@ src/
 ├── storage/    ── JSON persistence: config, history, playlists, bookmarks, and notes
 ├── tools/      ── FFmpeg-based media processing: trim, converter, and thumbnails
 ├── services/   ── Integrations and network services: OpenSubtitles, Last.fm, HTTP Remote Server
-└── theme/      ── Color themes and internationalization (i18n)
+├── theme/      ── Color themes and internationalization (i18n)
+├── components/ ── Pure Dioxus UI presentational components and Modals
+├── containers/ ── Smart Dioxus components handling global AppState logic
+├── bootstrap.rs── App initialization and global AppState instantiation
+└── tasks.rs    ── Asynchronous background threads and UI polling tasks
 ```
+
+---
+
+## 🖥️ UI Architecture (Dioxus Components & State)
+RPlayer uses a modern React-like component structure powered by Dioxus Desktop.
+- **[src/bootstrap.rs](../src/bootstrap.rs)**: Orchestrates the initialization of the app state by allocating over 40 global Signals based on the persistent JSON configuration.
+- **[src/tasks.rs](../src/tasks.rs)**: Contains `use_app_logic` and `spawn_polling_coroutine`. It extracts all the heavy `libmpv` handling, X11 `wid` binding, and background UI-polling tasks out of the main render loop.
+- **[src/containers/](../src/containers/)**: "Smart" wrappers (`AppHeaderBar`, `AppVideoStage`, `AppPlayerControls`, etc.) that read exactly what they need from `AppState` and handle complex interactions (like dropping files or toggling fullscreen).
+- **[src/components/](../src/components/)**: "Dumb" presentational components (buttons, sliders, modals) that only receive props and emit events without knowing about the global app state. The modals (Audio, Video, Tools) are internally modularized into tabs (`src/components/modals/audio/equalizer.rs`, etc).
 
 ---
 
@@ -60,4 +73,4 @@ src/
 
 - **`services/updater.rs`**: fully wired end-to-end (check, show result, download-and-install-with-rollback), but there's no manifest to point it at — this project doesn't publish a release-manifest JSON anywhere. The Settings tab lets you fill in your own Stable/Beta manifest URL; until one is set, "Check for updates" reports it isn't configured instead of hitting a fake endpoint.
 - **`playback/up_next.rs`** was removed as dead code (unused since the real playlist manager in `storage/playlist.rs` replaced it).
-- **Dioxus 0.7.10 upgrade (from 0.5)**: compiles clean and passes the full test/clippy/fmt suite, but the X11 video-embedding path (`gdkx11`/`WindowExtUnix` in `src/main.rs`, riding on the `tao` 0.26→0.34 bump pulled in transitively) has only been verified by the compiler on Windows — it still needs a manual smoke test on a real Linux desktop session before being considered fully verified.
+- **Dioxus 0.5.0-alpha structure**: Refactored to completely separate UI logic from presentational components, achieving a lean `main.rs` file. GTK+Wayland interactions are handled exclusively via the `xdg-desktop-portal` file dialogs to prevent application crashes under GNOME/Wayland.
