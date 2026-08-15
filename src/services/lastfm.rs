@@ -307,6 +307,6 @@ mod tests {
     fn test_get_session_not_configured() {
         let res = get_session("user", "pass");
         assert!(res.is_err());
-        assert_eq!(res.unwrap_err(), "API key no configurada");
+        assert_eq!(res.unwrap_err(), "API key not configured");
     }
 }

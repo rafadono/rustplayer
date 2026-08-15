@@ -14,7 +14,8 @@ impl Player {
     }
 
     pub fn set_deinterlace(&self, enable: bool) -> Result<(), libmpv2::Error> {
-        self.mpv.set_property("deinterlace", if enable { "yes" } else { "no" })
+        self.mpv
+            .set_property("deinterlace", if enable { "yes" } else { "no" })
     }
 
     pub fn apply_image_controls(&self, ic: &crate::image_controls::ImageControls) {

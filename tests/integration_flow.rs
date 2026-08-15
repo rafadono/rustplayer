@@ -3,11 +3,11 @@ use std::path::PathBuf;
 
 use rplayer::{
     bookmarks::{Bookmark, BookmarkStore},
+    config::{AspectRatio, Config},
+    equalizer::Equalizer,
     history::History,
     notes::{Note, NoteStore},
     playlist::Playlist,
-    config::{AspectRatio, Config},
-    equalizer::Equalizer,
 };
 
 fn sandbox_path(name: &str) -> PathBuf {
@@ -84,8 +84,8 @@ fn config_new_features_defaults_and_serialization() {
     let mut config = Config::default();
 
     assert_eq!(config.crop, 0.0);
-    assert_eq!(config.deinterlace, false);
-    assert_eq!(config.loudnorm, false);
+    assert!(!config.deinterlace);
+    assert!(!config.loudnorm);
     assert_eq!(config.sub_pos, 100);
     assert_eq!(config.aspect_ratio, AspectRatio::Auto);
 
@@ -99,8 +99,8 @@ fn config_new_features_defaults_and_serialization() {
     let loaded: Config = serde_json::from_str(&json).unwrap();
 
     assert_eq!(loaded.crop, 1.0);
-    assert_eq!(loaded.deinterlace, true);
-    assert_eq!(loaded.loudnorm, true);
+    assert!(loaded.deinterlace);
+    assert!(loaded.loudnorm);
     assert_eq!(loaded.sub_pos, 90);
     assert_eq!(loaded.aspect_ratio, AspectRatio::Ratio16_9);
 }

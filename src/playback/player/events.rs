@@ -272,7 +272,10 @@ impl Player {
                 Some(MediaTrack {
                     id: t.id,
                     kind,
-                    title: t.title.filter(|s| !s.is_empty()).unwrap_or_else(|| format!("Track {}", t.id)),
+                    title: t
+                        .title
+                        .filter(|s| !s.is_empty())
+                        .unwrap_or_else(|| format!("Track {}", t.id)),
                     lang: t.lang,
                     selected: t.selected,
                 })
