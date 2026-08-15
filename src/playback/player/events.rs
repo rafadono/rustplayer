@@ -18,7 +18,7 @@ impl Player {
             .name("mpv-monitor".into())
             .spawn(move || {
                 if !Self::run_event_loop(&mpv, &state, &tx) {
-                    warn!("mpv: create_client no disponible, usando sondeo de propiedades");
+                    warn!("mpv: create_client not available, using property polling");
                     Self::run_poll_loop(&mpv, &state, &tx);
                 }
             })
@@ -125,7 +125,7 @@ impl Player {
                         .as_ref()
                         .and_then(|p| p.file_name())
                         .map(|n| n.to_string_lossy().to_string())
-                        .unwrap_or_else(|| "Sin título".into());
+                        .unwrap_or_else(|| "Unknown title".into());
                     s.title = title.clone();
                     s.audio_tracks = tracks
                         .iter()
@@ -200,7 +200,7 @@ impl Player {
                     let title = PathBuf::from(&path)
                         .file_name()
                         .map(|n| n.to_string_lossy().to_string())
-                        .unwrap_or_else(|| "Sin título".into());
+                        .unwrap_or_else(|| "Unknown title".into());
                     s.title = title.clone();
                     let tracks = Self::load_tracks(mpv);
                     s.audio_tracks = tracks
@@ -253,7 +253,7 @@ impl Player {
             #[serde(rename = "type")]
             kind: String,
             #[serde(default)]
-            title: String,
+            title: Option<String>,
             #[serde(rename = "lang", default)]
             lang: String,
             #[serde(default)]
@@ -272,11 +272,7 @@ impl Player {
                 Some(MediaTrack {
                     id: t.id,
                     kind,
-                    title: if t.title.is_empty() {
-                        format!("Pista {}", t.id)
-                    } else {
-                        t.title
-                    },
+                    title: t.title.filter(|s| !s.is_empty()).unwrap_or_else(|| format!("Track {}", t.id)),
                     lang: t.lang,
                     selected: t.selected,
                 })

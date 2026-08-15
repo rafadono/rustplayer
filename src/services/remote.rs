@@ -38,7 +38,7 @@ impl RemoteServer {
         let addr = format!("127.0.0.1:{}", port);
 
         let server = tiny_http::Server::http(&addr).ok()?;
-        info!("Control remoto en http://{}", addr);
+        info!("Remote control at http://{}", addr);
 
         thread::Builder::new()
             .name("remote-http".into())

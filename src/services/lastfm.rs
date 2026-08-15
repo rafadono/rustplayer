@@ -267,7 +267,7 @@ fn unix_now() -> u64 {
 /// Authenticates the user using credentials and returns the session_key.
 pub fn get_session(username: &str, password: &str) -> Result<String, String> {
     if api_key() == obfstr::obfstr!("REEMPLAZAR_CON_TU_API_KEY") {
-        return Err("API key no configurada".to_string());
+        return Err("API key not configured".to_string());
     }
 
     let mut params = BTreeMap::new();
@@ -288,14 +288,14 @@ pub fn get_session(username: &str, password: &str) -> Result<String, String> {
     }
 
     let parsed: MobileSessionResponse =
-        serde_json::from_str(&res_text).map_err(|e| format!("Error al parsear JSON: {}", e))?;
+        serde_json::from_str(&res_text).map_err(|e| format!("Error parsing JSON: {}", e))?;
 
     if let Some(session) = parsed.session {
         Ok(session.key)
     } else if let Some(msg) = parsed.message {
         Err(msg)
     } else {
-        Err("Error de autenticación desconocido".to_string())
+        Err("Unknown authentication error".to_string())
     }
 }
 

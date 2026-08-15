@@ -6,6 +6,8 @@ use rplayer::{
     history::History,
     notes::{Note, NoteStore},
     playlist::Playlist,
+    config::{AspectRatio, Config},
+    equalizer::Equalizer,
 };
 
 fn sandbox_path(name: &str) -> PathBuf {
@@ -75,4 +77,51 @@ fn history_playback_integration_flow() {
     assert_eq!(entry.play_count, 1);
     assert_eq!(entry.last_position, 30.0);
     assert!(entry.should_resume());
+}
+
+#[test]
+fn config_new_features_defaults_and_serialization() {
+    let mut config = Config::default();
+
+    assert_eq!(config.crop, 0.0);
+    assert_eq!(config.deinterlace, false);
+    assert_eq!(config.loudnorm, false);
+    assert_eq!(config.sub_pos, 100);
+    assert_eq!(config.aspect_ratio, AspectRatio::Auto);
+
+    config.crop = 1.0;
+    config.deinterlace = true;
+    config.loudnorm = true;
+    config.sub_pos = 90;
+    config.aspect_ratio = AspectRatio::Ratio16_9;
+
+    let json = serde_json::to_string(&config).unwrap();
+    let loaded: Config = serde_json::from_str(&json).unwrap();
+
+    assert_eq!(loaded.crop, 1.0);
+    assert_eq!(loaded.deinterlace, true);
+    assert_eq!(loaded.loudnorm, true);
+    assert_eq!(loaded.sub_pos, 90);
+    assert_eq!(loaded.aspect_ratio, AspectRatio::Ratio16_9);
+}
+
+#[test]
+fn aspect_ratio_mpv_value_mapping() {
+    assert_eq!(AspectRatio::Auto.to_mpv_value(), "-1");
+    assert_eq!(AspectRatio::Ratio16_9.to_mpv_value(), "16/9");
+    assert_eq!(AspectRatio::Ratio4_3.to_mpv_value(), "4/3");
+    assert_eq!(AspectRatio::Ratio21_9.to_mpv_value(), "21/9");
+    assert_eq!(AspectRatio::Ratio1_1.to_mpv_value(), "1/1");
+    assert_eq!(AspectRatio::Custom(2.35).to_mpv_value(), "2.3500");
+}
+
+#[test]
+fn loudnorm_af_chain_integration() {
+    let eq = Equalizer::default();
+
+    let chain_normal = eq.to_mpv_af_chain(false);
+    assert!(!chain_normal.contains("lavfi=[loudnorm]"));
+
+    let chain_loud = eq.to_mpv_af_chain(true);
+    assert!(chain_loud.starts_with("lavfi=[loudnorm]"));
 }

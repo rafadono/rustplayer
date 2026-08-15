@@ -6,9 +6,11 @@ pub fn EqualizerTab(
     eq_bands: Vec<f64>,
     eq_enabled: bool,
     eq_preset: String,
+    loudnorm: bool,
     on_band_change: EventHandler<(usize, f64)>,
     on_toggle_eq: EventHandler<bool>,
     on_select_preset: EventHandler<String>,
+    on_toggle_loudnorm: EventHandler<bool>,
 ) -> Element {
     let language = use_context::<Signal<Language>>();
     let band_labels = [
@@ -35,6 +37,14 @@ pub fn EqualizerTab(
                     onchange: move |e| on_toggle_eq.call(e.value() == "true")
                 }
                 span { "{tr(language(), \"audio.enable_eq\")}" }
+            }
+            label { style: "display: flex; align-items: center; gap: 8px; cursor: pointer;",
+                input {
+                    r#type: "checkbox",
+                    checked: "{loudnorm}",
+                    onchange: move |e| on_toggle_loudnorm.call(e.value() == "true")
+                }
+                span { "{tr(language(), \"audio.loudnorm\")}" }
             }
             select {
                 class: "select-input",

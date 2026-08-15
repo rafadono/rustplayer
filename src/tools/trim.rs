@@ -64,7 +64,7 @@ impl TrimJob {
                     }
                     Ok(s) => {
                         let _ =
-                            tx.send(TrimStatus::Error(format!("ffmpeg salió con código {}", s)));
+                            tx.send(TrimStatus::Error(format!("ffmpeg exited with code {}", s)));
                     }
                     Err(e) => {
                         error!("trim error: {}", e);

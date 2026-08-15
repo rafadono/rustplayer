@@ -26,9 +26,11 @@ pub fn AudioModal(
     eq_bands: Vec<f64>,
     eq_enabled: bool,
     eq_preset: String,
+    loudnorm: bool,
     on_band_change: EventHandler<(usize, f64)>,
     on_toggle_eq: EventHandler<bool>,
     on_select_preset: EventHandler<String>,
+    on_toggle_loudnorm: EventHandler<bool>,
     // Audio Tracks
     audio_tracks: Vec<TrackItem>,
     current_audio: Option<i64>,
@@ -87,9 +89,11 @@ pub fn AudioModal(
                                     eq_bands,
                                     eq_enabled,
                                     eq_preset,
+                                    loudnorm,
                                     on_band_change,
                                     on_toggle_eq,
                                     on_select_preset,
+                                    on_toggle_loudnorm,
                                 }
                             },
                             AudioTab::Tracks => rsx! {

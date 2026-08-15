@@ -32,6 +32,12 @@ pub fn VideoModal(
     sub_search_status: String,
     sub_search_results: Vec<SubResult>,
     on_download_sub: EventHandler<SubResult>,
+    sub_font_size: i64,
+    sub_color: String,
+    sub_pos: i64,
+    on_change_sub_font_size: EventHandler<i64>,
+    on_change_sub_color: EventHandler<String>,
+    on_change_sub_pos: EventHandler<i64>,
     // Image Controls Props
     brightness: i64,
     contrast: i64,
@@ -43,6 +49,12 @@ pub fn VideoModal(
     on_change_saturation: EventHandler<i64>,
     on_change_hue: EventHandler<i64>,
     on_change_gamma: EventHandler<i64>,
+    aspect_ratio: rplayer::config::AspectRatio,
+    crop: f64,
+    deinterlace: bool,
+    on_change_aspect_ratio: EventHandler<rplayer::config::AspectRatio>,
+    on_change_crop: EventHandler<f64>,
+    on_change_deinterlace: EventHandler<bool>,
     on_reset_image: EventHandler<()>,
 ) -> Element {
     let language = use_context::<Signal<Language>>();
@@ -92,6 +104,12 @@ pub fn VideoModal(
                                     sub_search_status,
                                     sub_search_results,
                                     on_download_sub,
+                                    sub_font_size,
+                                    sub_color,
+                                    sub_pos,
+                                    on_change_sub_font_size,
+                                    on_change_sub_color,
+                                    on_change_sub_pos,
                                 }
                             },
                             VideoTab::Image => rsx! {
@@ -106,6 +124,12 @@ pub fn VideoModal(
                                     on_change_saturation,
                                     on_change_hue,
                                     on_change_gamma,
+                                    aspect_ratio,
+                                    crop,
+                                    deinterlace,
+                                    on_change_aspect_ratio,
+                                    on_change_crop,
+                                    on_change_deinterlace,
                                     on_reset_image,
                                 }
                             },

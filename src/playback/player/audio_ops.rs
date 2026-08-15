@@ -22,6 +22,10 @@ impl Player {
         self.mpv.set_property("sub-font-size", size)
     }
 
+    pub fn set_sub_pos(&self, pos: i64) -> Result<(), libmpv2::Error> {
+        self.mpv.set_property("sub-pos", pos)
+    }
+
     pub fn set_sub_color_rgb(&self, r: u8, g: u8, b: u8) -> Result<(), libmpv2::Error> {
         let color = format!("#{r:02X}{g:02X}{b:02X}");
         self.mpv.set_property("sub-color", color.as_str())

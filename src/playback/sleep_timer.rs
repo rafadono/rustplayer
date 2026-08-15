@@ -12,9 +12,9 @@ pub enum SleepAction {
 impl SleepAction {
     pub fn label(&self) -> &str {
         match self {
-            Self::Pause => "Pausar",
-            Self::Stop => "Detener",
-            Self::Quit => "Cerrar aplicación",
+            Self::Pause => "Pause",
+            Self::Stop => "Stop",
+            Self::Quit => "Quit application",
         }
     }
 }

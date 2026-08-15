@@ -28,7 +28,7 @@ impl ConvertPreset {
             Self::WebmVp9 => "WebM / VP9",
             Self::Mp3_320 => "MP3 320kbps",
             Self::Mp3_192 => "MP3 192kbps",
-            Self::FlacLossless => "FLAC (sin pérdida)",
+            Self::FlacLossless => "FLAC (lossless)",
             Self::AacM4a => "AAC / M4A",
             Self::OggVorbis => "OGG Vorbis",
         }
@@ -126,7 +126,7 @@ impl ConvertJob {
                     }
                     Ok(s) => {
                         let _ = tx.send(ConvertStatus::Error(format!(
-                            "ffmpeg salió con código {}",
+                            "ffmpeg exited with code {}",
                             s
                         )));
                     }

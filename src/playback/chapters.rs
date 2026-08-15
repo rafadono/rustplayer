@@ -27,7 +27,7 @@ pub fn parse_chapter_list(json: &str) -> Vec<Chapter> {
             title: c
                 .title
                 .filter(|t| !t.is_empty())
-                .unwrap_or_else(|| format!("Capítulo {}", i + 1)),
+                .unwrap_or_else(|| format!("Chapter {}", i + 1)),
             time: c.time,
         })
         .collect()

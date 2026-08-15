@@ -16,6 +16,7 @@ pub fn AppAudioModal() -> Element {
     let mut eq_enabled = state.eq_enabled;
     let mut eq_bands = state.eq_bands;
     let mut eq_preset = state.eq_preset;
+    let mut loudnorm = state.loudnorm;
     let mut audio_delay = state.audio_delay;
     let mut karaoke_enabled = state.karaoke_enabled;
     let mut karaoke_pitch = state.karaoke_pitch;
@@ -39,6 +40,16 @@ pub fn AppAudioModal() -> Element {
             eq_bands: eq_bands(),
             eq_enabled: eq_enabled(),
             eq_preset: eq_preset(),
+            loudnorm: loudnorm(),
+            on_toggle_loudnorm: move |en: bool| {
+                loudnorm.set(en);
+                config.write().loudnorm = en;
+                let eq_snapshot = config.read().equalizer.clone();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() { p.set_audio_filters(&eq_snapshot, en, karaoke_enabled(), karaoke_pitch()); }
+                }
+                config.read().save();
+            },
             on_band_change: move |(idx, val): (usize, f64)| {
                 if idx < eq_bands.read().len() {
                     eq_bands.write()[idx] = val;

@@ -59,6 +59,10 @@ pub struct Config {
 
     // Image
     pub image_controls: ImageControls,
+    #[serde(default)]
+    pub crop: f64,
+    #[serde(default)]
+    pub deinterlace: bool,
 
     // UI
     pub show_donation_banner: bool,
@@ -103,6 +107,8 @@ pub struct Config {
     pub sub_font_family: String,
     #[serde(default)]
     pub sub_bold: bool,
+    #[serde(default = "default_sub_pos")]
+    pub sub_pos: i64,
     pub loudnorm: bool,
 }
 
@@ -160,6 +166,8 @@ impl Default for Config {
             audio_delay: 0.0,
             sub_delay: 0.0,
             image_controls: ImageControls::default(),
+            crop: 0.0,
+            deinterlace: false,
             show_donation_banner: true,
             show_playlist: true,
             last_directory: None,
@@ -184,6 +192,7 @@ impl Default for Config {
             sub_opacity: default_sub_opacity(),
             sub_font_family: default_sub_font_family(),
             sub_bold: false,
+            sub_pos: 100,
             loudnorm: false,
         }
     }
@@ -215,6 +224,10 @@ fn default_sub_opacity() -> f32 {
 
 fn default_sub_font_family() -> String {
     "sans-serif".to_string()
+}
+
+fn default_sub_pos() -> i64 {
+    100
 }
 
 impl Config {

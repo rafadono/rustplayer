@@ -30,6 +30,11 @@ pub fn init_app_state(initial_config: &AppConfig) -> AppState {
             p.apply_image_controls(&initial_config.image_controls);
             let _ = p.set_audio_delay(initial_config.audio_delay);
             let _ = p.set_sub_delay(initial_config.sub_delay);
+            let _ = p.set_aspect_ratio(&initial_config.aspect_ratio);
+            let _ = p.set_crop(initial_config.crop);
+            let _ = p.set_deinterlace(initial_config.deinterlace);
+            let _ = p.set_sub_font_size(initial_config.sub_font_size);
+            let _ = p.set_sub_pos(initial_config.sub_pos);
             if initial_config.equalizer.enabled
                 || initial_config.karaoke_enabled
                 || initial_config.karaoke_pitch.abs() > 0.01
@@ -89,6 +94,13 @@ pub fn init_app_state(initial_config: &AppConfig) -> AppState {
         gamma: use_signal(|| initial_config.image_controls.gamma),
         audio_delay: use_signal(|| initial_config.audio_delay),
         sub_delay: use_signal(|| initial_config.sub_delay),
+        aspect_ratio: use_signal(|| initial_config.aspect_ratio.clone()),
+        crop: use_signal(|| initial_config.crop),
+        deinterlace: use_signal(|| initial_config.deinterlace),
+        loudnorm: use_signal(|| initial_config.loudnorm),
+        sub_font_size: use_signal(|| initial_config.sub_font_size),
+        sub_color: use_signal(|| initial_config.sub_color.clone()),
+        sub_pos: use_signal(|| initial_config.sub_pos),
         karaoke_enabled: use_signal(|| initial_config.karaoke_enabled),
         karaoke_pitch: use_signal(|| initial_config.karaoke_pitch),
         bookmarks: use_signal(Vec::new),

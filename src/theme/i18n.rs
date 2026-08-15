@@ -248,6 +248,7 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "audio.enable_karaoke" => "Activar Supresión Vocal (Modo Karaoke)",
             "audio.pitch_label" => "Ajuste de Tono (Pitch Shift)",
             "audio.semitones_unit" => "semitonos",
+            "audio.loudnorm" => "Compresor de Rango Dinámico (Loudnorm)",
 
             // Video modal
             "video_modal.tab_subtitles" => "💬 Subtítulos & OpenSubtitles",
@@ -266,6 +267,13 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "video_modal.hue_label" => "Tono (Hue)",
             "video_modal.gamma_label" => "Gamma",
             "video_modal.reset_defaults" => "🔄 Restablecer Valores por Defecto",
+            "video_modal.sub_style_title" => "Estilo de Subtítulos",
+            "video_modal.sub_font_size" => "Tamaño de Fuente",
+            "video_modal.sub_pos" => "Posición Vertical",
+            "video_modal.sub_color" => "Color",
+            "video_modal.aspect_ratio" => "Relación de Aspecto",
+            "video_modal.crop" => "Recorte (Pan & Scan)",
+            "video_modal.deinterlace" => "Desentrelazado",
 
             // Tools modal
             "tools_modal.tab_bookmarks" => "🔖 Marcadores & Notas",
@@ -593,6 +601,7 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "audio.enable_karaoke" => "Enable Vocal Suppression (Karaoke Mode)",
             "audio.pitch_label" => "Pitch Shift",
             "audio.semitones_unit" => "semitones",
+            "audio.loudnorm" => "Dynamic Range Compressor (Loudnorm)",
 
             // Video modal
             "video_modal.tab_subtitles" => "💬 Subtitles & OpenSubtitles",
@@ -611,6 +620,13 @@ pub fn tr(lang: Language, key: &str) -> &str {
             "video_modal.hue_label" => "Hue",
             "video_modal.gamma_label" => "Gamma",
             "video_modal.reset_defaults" => "🔄 Reset to Defaults",
+            "video_modal.sub_style_title" => "Subtitle Style",
+            "video_modal.sub_font_size" => "Font Size",
+            "video_modal.sub_pos" => "Vertical Position",
+            "video_modal.sub_color" => "Color",
+            "video_modal.aspect_ratio" => "Aspect Ratio",
+            "video_modal.crop" => "Crop (Pan & Scan)",
+            "video_modal.deinterlace" => "Deinterlace",
 
             // Tools modal
             "tools_modal.tab_bookmarks" => "🔖 Bookmarks & Notes",

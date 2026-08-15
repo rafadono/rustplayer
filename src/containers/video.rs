@@ -24,6 +24,13 @@ pub fn AppVideoModal() -> Element {
     let current_title = state.current_title;
     let playlist = state.playlist;
 
+    let mut aspect_ratio = state.aspect_ratio;
+    let mut crop = state.crop;
+    let mut deinterlace = state.deinterlace;
+    let mut sub_font_size = state.sub_font_size;
+    let mut sub_color = state.sub_color;
+    let mut sub_pos = state.sub_pos;
+
     // Derived
     let sub_tracks = state.sub_tracks.read().clone();
     let current_sub = *state.current_sub.read();
@@ -90,6 +97,41 @@ pub fn AppVideoModal() -> Element {
                     sub_search.set(SubSearchJob::download(&result, &dest_dir));
                 }
             },
+            sub_font_size: sub_font_size(),
+            sub_color: sub_color(),
+            sub_pos: sub_pos(),
+            on_change_sub_font_size: move |s: i64| {
+                sub_font_size.set(s);
+                config.write().sub_font_size = s;
+                config.read().save();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() { let _ = p.set_sub_font_size(s); }
+                }
+            },
+            on_change_sub_color: move |c: String| {
+                sub_color.set(c.clone());
+                config.write().sub_color = c.clone();
+                config.read().save();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() {
+                        let hex = c.trim_start_matches('#');
+                        if hex.len() == 6 {
+                            let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(255);
+                            let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(255);
+                            let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(255);
+                            let _ = p.set_sub_color_rgb(r, g, b);
+                        }
+                    }
+                }
+            },
+            on_change_sub_pos: move |pos: i64| {
+                sub_pos.set(pos);
+                config.write().sub_pos = pos;
+                config.read().save();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() { let _ = p.set_sub_pos(pos); }
+                }
+            },
 
             brightness: brightness(),
             contrast: contrast(),
@@ -139,6 +181,33 @@ pub fn AppVideoModal() -> Element {
                 let ic = ImageControls { brightness: brightness(), contrast: contrast(), saturation: saturation(), hue: hue(), gamma: gamma(), ..Default::default() };
                 if let Some(ref p_arc) = *player_ref.read() {
                     if let Ok(p) = p_arc.lock() { p.apply_image_controls(&ic); }
+                }
+            },
+            aspect_ratio: aspect_ratio(),
+            crop: crop(),
+            deinterlace: deinterlace(),
+            on_change_aspect_ratio: move |ar: rplayer::config::AspectRatio| {
+                aspect_ratio.set(ar.clone());
+                config.write().aspect_ratio = ar.clone();
+                config.read().save();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() { let _ = p.set_aspect_ratio(&ar); }
+                }
+            },
+            on_change_crop: move |c: f64| {
+                crop.set(c);
+                config.write().crop = c;
+                config.read().save();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() { let _ = p.set_crop(c); }
+                }
+            },
+            on_change_deinterlace: move |d: bool| {
+                deinterlace.set(d);
+                config.write().deinterlace = d;
+                config.read().save();
+                if let Some(ref p_arc) = *player_ref.read() {
+                    if let Ok(p) = p_arc.lock() { let _ = p.set_deinterlace(d); }
                 }
             },
             on_reset_image: move |_| {

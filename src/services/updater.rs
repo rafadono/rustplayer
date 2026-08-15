@@ -35,7 +35,7 @@ pub struct UpdateInfo {
 pub fn check_for_updates(channel: UpdateChannel, manifest_url: &str) -> Result<UpdateInfo, String> {
     let manifest_url = manifest_url.trim();
     if manifest_url.is_empty() {
-        return Err("no hay URL de manifiesto configurada para este canal".to_string());
+        return Err("no manifest URL configured for this channel".to_string());
     }
     let resp = ureq::get(manifest_url)
         .timeout(std::time::Duration::from_secs(6))
@@ -84,7 +84,7 @@ pub fn download_update_to_temp(url: &str) -> Result<PathBuf, String> {
     let mut reader = resp.into_reader();
     std::io::copy(&mut reader, &mut bytes).map_err(|e| format!("read failed: {}", e))?;
     if bytes.len() < 64 * 1024 {
-        return Err("download demasiado pequeño".into());
+        return Err("download too small".into());
     }
     let path = std::env::temp_dir().join("rplayer_update_new.exe");
     let mut f = std::fs::File::create(&path).map_err(|e| format!("write failed: {}", e))?;

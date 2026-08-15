@@ -110,9 +110,9 @@ pub fn default_radio_stations() -> Vec<RadioStation> {
 pub fn fetch_podcast_feed(feed_url: &str) -> Result<PodcastFeed, String> {
     let body = ureq::get(feed_url)
         .call()
-        .map_err(|e| format!("No se pudo descargar RSS: {}", e))?
+        .map_err(|e| format!("Could not download RSS: {}", e))?
         .into_string()
-        .map_err(|e| format!("No se pudo leer RSS: {}", e))?;
+        .map_err(|e| format!("Could not read RSS: {}", e))?;
 
     let mut reader = Reader::from_str(&body);
     reader.config_mut().trim_text(true);
@@ -186,13 +186,13 @@ pub fn fetch_podcast_feed(feed_url: &str) -> Result<PodcastFeed, String> {
                 current_tag.clear();
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(format!("RSS invalido: {}", e)),
+            Err(e) => return Err(format!("Invalid RSS: {}", e)),
             _ => {}
         }
     }
 
     if episodes.is_empty() {
-        return Err("No se encontraron episodios en el feed RSS".to_string());
+        return Err("No episodes found in RSS feed".to_string());
     }
 
     Ok(PodcastFeed {

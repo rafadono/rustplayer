@@ -16,6 +16,12 @@ pub fn SubtitlesTab(
     sub_search_status: String,
     sub_search_results: Vec<SubResult>,
     on_download_sub: EventHandler<SubResult>,
+    sub_font_size: i64,
+    sub_color: String,
+    sub_pos: i64,
+    on_change_sub_font_size: EventHandler<i64>,
+    on_change_sub_color: EventHandler<String>,
+    on_change_sub_pos: EventHandler<i64>,
 ) -> Element {
     let language = use_context::<Signal<Language>>();
     let mut search_term = use_signal(|| opensubtitles_query.clone());
@@ -55,6 +61,37 @@ pub fn SubtitlesTab(
                     if let Ok(v) = e.value().parse::<f64>() {
                         on_change_sub_delay.call(v);
                     }
+                }
+            }
+        }
+
+        h4 { class: "section-title", "{tr(language(), \"video_modal.sub_style_title\")}" }
+        div { class: "control-group-col", style: "margin-bottom: 24px;",
+            div { class: "slider-row",
+                div { style: "display: flex; justify-content: space-between;",
+                    span { "{tr(language(), \"video_modal.sub_font_size\")}" }
+                    span { class: "eq-val-label", "{sub_font_size}" }
+                }
+                input {
+                    r#type: "range", min: "10", max: "150", value: "{sub_font_size}",
+                    oninput: move |e| { if let Ok(v) = e.value().parse::<i64>() { on_change_sub_font_size.call(v); } }
+                }
+            }
+            div { class: "slider-row",
+                div { style: "display: flex; justify-content: space-between;",
+                    span { "{tr(language(), \"video_modal.sub_pos\")}" }
+                    span { class: "eq-val-label", "{sub_pos}%" }
+                }
+                input {
+                    r#type: "range", min: "0", max: "100", value: "{sub_pos}",
+                    oninput: move |e| { if let Ok(v) = e.value().parse::<i64>() { on_change_sub_pos.call(v); } }
+                }
+            }
+            div { class: "slider-row", style: "display: flex; align-items: center; justify-content: space-between;",
+                span { "{tr(language(), \"video_modal.sub_color\")}" }
+                input {
+                    r#type: "color", value: "{sub_color}",
+                    oninput: move |e| { on_change_sub_color.call(e.value().to_string()); }
                 }
             }
         }

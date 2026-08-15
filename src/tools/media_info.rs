@@ -133,7 +133,7 @@ impl MediaInfo {
     pub fn channel_str(&self) -> String {
         match self.audio_channels {
             1 => "Mono".into(),
-            2 => "Estéreo".into(),
+            2 => "Stereo".into(),
             6 => "5.1".into(),
             8 => "7.1".into(),
             n if n > 0 => format!("{} canales", n),

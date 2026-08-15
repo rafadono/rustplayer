@@ -18,11 +18,14 @@
 - **6-band graphic PEQ equalizer** with preamp and presets (Rock, Pop, Bass Boost, Vocal, etc.).
 - Audio track selector and audio time offset (+/- ms).
 - **Karaoke** mode (vocal suppression) and pitch shift (+/- 6 semitones).
+- **Dynamic Range Compressor** (Loudnorm) for normalizing dialogue and action scenes.
 - **Last.fm Scrobbler** integration.
 
 ### 🎨 Video and Subtitles
 - Real-time image controls: Brightness, Contrast, Saturation, Hue, and Gamma.
+- **Video Adjustments**: Forced Aspect Ratio, Crop (Pan & Scan), and Deinterlacing.
 - Management of embedded and external subtitles (`.srt`, `.vtt`, `.ass`) with time offset.
+- **Subtitle Customization**: Adjust font size, vertical position, and color.
 - Automatic online subtitle search and download via **OpenSubtitles**.
 - Seekbar thumbnail preview: a small preview thumbnail pops up while dragging the seek slider, generated in the background via `ffmpeg` when the file loads.
 - Optional on-video performance overlay (FPS, dropped frames, hardware-decode status, buffer seconds), toggled from the Tools modal's Settings tab.

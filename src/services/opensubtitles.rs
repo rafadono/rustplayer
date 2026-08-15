@@ -191,18 +191,18 @@ fn download_file(file_id: u32, dest_dir: &Path, lang: &str) -> Result<PathBuf, S
         "file_id": file_id
     });
     let request_body_str = serde_json::to_string(&request_body)
-        .map_err(|e| format!("Error serializando JSON de descarga: {}", e))?;
+        .map_err(|e| format!("Error serializing download JSON: {}", e))?;
 
     let resp = ureq::post(&download_url)
         .set("Api-Key", &api_key())
         .set("User-Agent", &app_name())
         .set("Content-Type", "application/json")
         .send_string(&request_body_str)
-        .map_err(|e| format!("Error en POST de descarga: {}", e))?;
+        .map_err(|e| format!("Download POST error: {}", e))?;
 
     let resp_str = resp
         .into_string()
-        .map_err(|e| format!("Error al obtener cuerpo de respuesta: {}", e))?;
+        .map_err(|e| format!("Error getting response body: {}", e))?;
 
     #[derive(Deserialize)]
     struct DownloadResponse {
@@ -211,13 +211,13 @@ fn download_file(file_id: u32, dest_dir: &Path, lang: &str) -> Result<PathBuf, S
     }
 
     let dl_resp: DownloadResponse = serde_json::from_str(&resp_str)
-        .map_err(|e| format!("Error parseando JSON de descarga: {}", e))?;
+        .map_err(|e| format!("Error parsing download JSON: {}", e))?;
 
     // 2. GET the temporary link to retrieve the subtitle file bytes
     let file_resp = ureq::get(&dl_resp.link)
         .set("User-Agent", &app_name())
         .call()
-        .map_err(|e| format!("Error descargando archivo de subtítulo: {}", e))?;
+        .map_err(|e| format!("Error downloading subtitle file: {}", e))?;
 
     let filename = dl_resp
         .file_name
@@ -235,7 +235,7 @@ fn download_file(file_id: u32, dest_dir: &Path, lang: &str) -> Result<PathBuf, S
     };
 
     std::fs::write(&dest, bytes).map_err(|e| e.to_string())?;
-    debug!("subtítulo descargado: {}", dest.display());
+    debug!("subtitle downloaded: {}", dest.display());
     Ok(dest)
 }
 
@@ -257,18 +257,18 @@ pub fn is_configured() -> bool {
 ///Common languages ​​​​with their ISO 639-1 code
 pub fn common_languages() -> &'static [(&'static str, &'static str)] {
     &[
-        ("es", "Español"),
-        ("en", "Inglés"),
-        ("fr", "Francés"),
-        ("de", "Alemán"),
-        ("pt", "Portugués"),
-        ("it", "Italiano"),
-        ("ja", "Japonés"),
-        ("zh", "Chino"),
-        ("ko", "Coreano"),
-        ("ru", "Ruso"),
-        ("ar", "Árabe"),
-        ("nl", "Holandés"),
+        ("es", "Spanish"),
+        ("en", "English"),
+        ("fr", "French"),
+        ("de", "German"),
+        ("pt", "Portuguese"),
+        ("it", "Italian"),
+        ("ja", "Japanese"),
+        ("zh", "Chinese"),
+        ("ko", "Korean"),
+        ("ru", "Russian"),
+        ("ar", "Arabic"),
+        ("nl", "Dutch"),
     ]
 }
 

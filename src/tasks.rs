@@ -380,7 +380,7 @@ pub fn use_app_logic(state: AppState) -> AppLogic {
                 if let Some(ref p_arc) = *player_ref.read() {
                     if let Ok(p) = p_arc.lock() {
                         if let Err(e) = p.set_wid(wid) {
-                            log::warn!("mpv: no se pudo asignar wid {wid}: {e:?}");
+                            error!("mpv: could not assign wid {wid}: {e:?}");
                         }
                     }
                 }

@@ -9,6 +9,14 @@ impl Player {
         self.mpv.set_property("video-aspect-override", val.as_str())
     }
 
+    pub fn set_crop(&self, panscan: f64) -> Result<(), libmpv2::Error> {
+        self.mpv.set_property("panscan", panscan)
+    }
+
+    pub fn set_deinterlace(&self, enable: bool) -> Result<(), libmpv2::Error> {
+        self.mpv.set_property("deinterlace", if enable { "yes" } else { "no" })
+    }
+
     pub fn apply_image_controls(&self, ic: &crate::image_controls::ImageControls) {
         ic.apply(&self.mpv);
     }
